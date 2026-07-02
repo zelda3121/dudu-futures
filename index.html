@@ -1,4 +1,4 @@
-<title>嘟嘟台指期槓桿計算機 v3.1.1</title>
+<title>嘟嘟台指期槓桿計算機 v3.1.2</title>
 <style>
   :root {
     --bg:      #0C1220;
@@ -483,7 +483,7 @@
       <span class="hdr-sep">·</span>
       <span class="hdr-eye">我們這一家 &amp; 嘟嘟這一家 專用</span>
       <span class="hdr-sep">·</span>
-      <span class="ver">v3.1.1</span>
+      <span class="ver">v3.1.2</span>
       <span class="hdr-sep">·</span>
       <span class="hdr-tagline">Sammy Hsu</span>
     </div>
@@ -670,7 +670,7 @@
 </div>
 
 <script>
-  const APP_VERSION         = 'v3.1.1';
+  const APP_VERSION         = 'v3.1.2';
   const FALLBACK_MARGIN_DATE = '2026-07-02';
 
   const HIST_DROPS = [
@@ -879,7 +879,7 @@
 
     // Risk mode recommendations
     let rmC = 0, rmS = 0, rmA = 0;
-    for (let n = 1; n <= 50; n++) {
+    for (let n = 1; n <= 100; n++) {
       if (n * p.im > p.eq) break;
       const lev  = (n * cv) / p.eq;
       const mPct = (n * p.im) / p.eq * 100;
@@ -894,7 +894,7 @@
     const tbody = g('tbody');
     tbody.innerHTML = '';
 
-    for (let n = 1; n <= 50; n++) {
+    for (let n = 1; n <= 100; n++) {
       const marginUsed = n * p.im;
       const canOpen    = marginUsed <= p.eq;
       const lev        = (n * cv) / p.eq;
