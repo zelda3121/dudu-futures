@@ -432,8 +432,7 @@
   }
   .leg { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--txt3); }
   .leg-d { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-  .visit-cnt-wrap { margin-left: auto; font-size: 10px; color: var(--txt3); opacity: .5; font-family: var(--mono); white-space: nowrap; }
-  .note { font-size: 10.5px; color: var(--txt3); opacity: .4; }
+  .note { margin-left: auto; font-size: 10.5px; color: var(--txt3); opacity: .4; }
 
   /* ── STRESS QUICK BUTTONS ── */
   .stress-btns { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 8px; }
@@ -664,7 +663,7 @@
       <span style="width:18px;height:7px;border-radius:2px;background:rgba(255,80,80,.2);flex-shrink:0;display:inline-block"></span>
       壓測危險區
     </div>
-    <span class="visit-cnt-wrap">訪客 <span id="visit-cnt">—</span></span>
+    <img src="https://hits.sh/zelda3121.github.io/dudu-futures.svg?style=flat-square&label=%E8%A8%AA%E5%AE%A2&labelColor=192438&color=2C4A78" alt="訪客" style="height:16px;vertical-align:middle;margin-left:auto;opacity:.8">
     <span class="note">數據僅供參考，非即時市場資訊 · 不構成投資建議</span>
   </footer>
 
@@ -1024,21 +1023,10 @@
     return Object.keys(found).length === 3 ? found : null;
   }
 
-  async function trackVisit() {
-    try {
-      const res = await fetch('https://api.countapi.xyz/hit/zelda3121-dudu-futures/visits');
-      if (!res.ok) return;
-      const data = await res.json();
-      const el = g('visit-cnt');
-      if (el && data && data.value) el.textContent = data.value.toLocaleString('zh-TW');
-    } catch (_) {}
-  }
-
   async function init() {
     loadSettings();
     renderHistTable();
     setStatus('', '保證金資料載入中…');
-    trackVisit();
     const live = await fetchTaifexMargins();
     if (live) {
       Object.keys(live).forEach(key => {
