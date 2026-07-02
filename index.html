@@ -1,4 +1,4 @@
-<title>嘟嘟台指期槓桿計算機 v3.0.0</title>
+<title>嘟嘟台指期槓桿計算機 v3.0.1</title>
 <style>
   :root {
     --bg:      #0C1220;
@@ -91,10 +91,11 @@
 
   /* ── SUMMARY ── */
   .summ {
-    display: grid; grid-template-columns: repeat(4,1fr);
+    display: grid; grid-template-columns: repeat(7,1fr);
     gap: 1px; background: var(--bdr); border-bottom: 1px solid var(--bdr);
   }
-  @media(max-width:600px){ .summ{ grid-template-columns: repeat(2,1fr); } }
+  @media(max-width:960px){ .summ{ grid-template-columns: repeat(4,1fr); } }
+  @media(max-width:480px){ .summ{ grid-template-columns: repeat(2,1fr); } }
   .s { background: var(--surf2); padding: 10px 18px; }
   .s-lbl { font-size: 9.5px; letter-spacing: .07em; text-transform: uppercase; color: var(--txt3); }
   .s-val {
@@ -433,6 +434,53 @@
   .leg-d { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
   .visit-cnt-wrap { margin-left: auto; font-size: 10px; color: var(--txt3); opacity: .5; font-family: var(--mono); white-space: nowrap; }
   .note { font-size: 10.5px; color: var(--txt3); opacity: .4; }
+
+  /* ── STRESS QUICK BUTTONS ── */
+  .stress-btns { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 8px; }
+  .stress-btn {
+    font-family: var(--mono); font-size: 10px; font-weight: 600;
+    color: var(--coffee); background: var(--cof-dim);
+    border: 1px solid rgba(208,136,24,.35);
+    padding: 2px 8px; border-radius: 3px; cursor: pointer;
+    transition: background .12s, border-color .12s;
+    white-space: nowrap; line-height: 1.6;
+  }
+  .stress-btn:hover { background: rgba(208,136,24,.22); border-color: var(--coffee); }
+
+  /* ── DECISION SUMMARY ── */
+  .decision-wrap {
+    border-bottom: 1px solid var(--bdr);
+    background: var(--surf2);
+    padding: 10px 20px;
+  }
+  .decision-hint {
+    font-size: 11px; color: var(--txt3); padding: 4px 0; text-align: center;
+  }
+  .decision-grid {
+    display: grid; grid-template-columns: repeat(7,1fr);
+    gap: 14px 20px;
+  }
+  @media(max-width:960px){ .decision-grid{ grid-template-columns: repeat(4,1fr); } }
+  @media(max-width:520px){ .decision-grid{ grid-template-columns: repeat(2,1fr); } }
+  .dc-lbl { font-size: 9px; letter-spacing: .07em; text-transform: uppercase; color: var(--txt3); }
+  .dc-val { font-family: var(--mono); font-size: 14px; font-weight: 700; margin-top: 3px; font-variant-numeric: tabular-nums; color: var(--txt); }
+  .risk-badge {
+    display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .05em;
+    padding: 2px 8px; border-radius: 3px; text-transform: uppercase;
+  }
+  .risk-low  { background: rgba(52,217,120,.15); color: var(--green); border: 1px solid rgba(52,217,120,.4); }
+  .risk-mid  { background: rgba(245,166,35,.15); color: var(--amber); border: 1px solid rgba(245,166,35,.4); }
+  .risk-high { background: rgba(240,84,84,.15);  color: var(--red);   border: 1px solid rgba(240,84,84,.4); }
+
+  /* ── MOBILE STICKY FIRST TWO COLUMNS ── */
+  @media(max-width:760px) {
+    thead th:nth-child(1), tbody td:nth-child(1) { position: sticky; left: 0;    z-index: 2; }
+    thead th:nth-child(2), tbody td:nth-child(2) { position: sticky; left: 52px; z-index: 2; }
+    thead th:nth-child(1), thead th:nth-child(2) { background: #181F30; }
+    tbody td:nth-child(1), tbody td:nth-child(2) { background: #131B2A; }
+    tbody tr.pinned td:nth-child(1),
+    tbody tr.pinned td:nth-child(2) { background: rgba(212,160,12,.28) !important; }
+  }
 </style>
 
 <div id="app">
@@ -445,7 +493,7 @@
       <span class="hdr-sep">·</span>
       <span class="hdr-eye">我們這一家 &amp; 嘟嘟這一家 專用</span>
       <span class="hdr-sep">·</span>
-      <span class="ver">v3.0.0</span>
+      <span class="ver">v3.0.1</span>
       <span class="hdr-sep">·</span>
       <span class="hdr-tagline">Sammy Hsu</span>
     </div>
@@ -506,6 +554,12 @@
         <input class="p-in" id="v-st" type="number" value="2000" min="1" title="假設下跌點數" oninput="render()">
         <span class="p-unit">點</span>
       </div>
+      <div class="stress-btns">
+        <button class="stress-btn" onclick="setStress(1000)">-1,000</button>
+        <button class="stress-btn" onclick="setStress(2000)">-2,000</button>
+        <button class="stress-btn" onclick="setStress(3000)">-3,000</button>
+        <button class="stress-btn" onclick="setStressMax()">歷史最大</button>
+      </div>
     </div>
     <div class="p">
       <div class="p-lbl">每日跌停幅度<span class="tip" data-tip="期交所規定的每日最大跌幅。目前台指期為 10%，用於試算單日若觸及跌停的最大損失">?</span></div>
@@ -547,6 +601,23 @@
       <div class="s-lbl">壓測下最多安全口數</div>
       <div class="s-val" id="s-sm" style="color:var(--amber)">—</div>
     </div>
+    <div class="s">
+      <div class="s-lbl">保守建議 <span style="font-size:8px;opacity:.55">≤4x ≤30%</span></div>
+      <div class="s-val" id="s-rm-c" style="color:var(--green)">—</div>
+    </div>
+    <div class="s">
+      <div class="s-lbl">標準建議 <span style="font-size:8px;opacity:.55">≤6x ≤50%</span></div>
+      <div class="s-val" id="s-rm-s" style="color:var(--amber)">—</div>
+    </div>
+    <div class="s">
+      <div class="s-lbl">積極上限 <span style="font-size:8px;opacity:.55">≤8x ≤70%</span></div>
+      <div class="s-val" id="s-rm-a" style="color:var(--red)">—</div>
+    </div>
+  </div>
+
+  <div class="decision-wrap">
+    <div class="decision-hint" id="decision-hint">↑ 點選下方表格任一列，查看該口數的詳細風險摘要</div>
+    <div class="decision-grid" id="decision-grid" style="display:none"></div>
   </div>
 
   <div class="twrap">
@@ -555,10 +626,10 @@
         <tr>
           <th title="持有的合約口數">口數</th>
           <th title="合約總面值 ÷ 帳戶權益，倍數越高風險越大">槓桿倍數</th>
-          <th title="帳戶從現在跌到強制平倉線，還能承受幾點的下跌">距強制平倉(點)</th>
-          <th title="指數跌到這個點位時，帳戶將觸發強制平倉">強制平倉點位</th>
+          <th title="帳戶權益跌至維持保證金門檻前，還能承受幾點的跌幅">距追繳線(點)</th>
+          <th title="指數跌至此點位時，帳戶將觸發追繳保證金通知，期貨商可能啟動風控程序">追繳風險點位</th>
           <th title="指數急跌「壓力測試跌幅」點數後，損失了多少資金。標示「爆倉」代表帳戶歸零，「需追繳」代表需補繳保證金" style="color:var(--green)">壓測後損失資金</th>
-          <th title="若指數上漲 100 點，這個部位的獲利金額">每漲 100 點獲利</th>
+          <th title="指數每變動 100 點，此口數部位的損益金額；多單上漲為獲利、下跌為虧損">每 100 點損益</th>
           <th title="已凍結保證金佔帳戶權益的比例">保證金使用率</th>
           <th title="帳戶權益扣掉已凍結保證金後，還能再開倉的資金">剩餘可用資金</th>
         </tr>
@@ -583,18 +654,7 @@
               <th>#</th><th>日期</th><th>事件</th><th>跌點</th><th>跌幅</th>
             </tr>
           </thead>
-          <tbody>
-            <tr><td>1</td><td>2025-04-07</td><td>川普關稅衝擊・亞太黑色星期一</td><td>▼ 1,862</td><td>9.70%</td></tr>
-            <tr><td>2</td><td>2024-08-05</td><td>日圓套利崩解・日本股市熔斷</td><td>▼ 1,807</td><td>8.35%</td></tr>
-            <tr><td>3</td><td>2022-01-20</td><td>Fed 急升息恐慌</td><td>▼ 855</td><td>4.88%</td></tr>
-            <tr><td>4</td><td>2000-03-20</td><td>台灣總統大選後首交易日</td><td>▼ 744</td><td>6.31%</td></tr>
-            <tr><td>5</td><td>2020-03-19</td><td>COVID-19 疫情崩盤</td><td>▼ 698</td><td>5.83%</td></tr>
-            <tr><td>6</td><td>2020-03-12</td><td>COVID-19 歐美全面擴散</td><td>▼ 585</td><td>4.60%</td></tr>
-            <tr><td>7</td><td>2022-09-13</td><td>美 CPI 爆冷・升息預期暴升</td><td>▼ 576</td><td>3.52%</td></tr>
-            <tr><td>8</td><td>2008-10-06</td><td>全球金融海嘯・雷曼餘震</td><td>▼ 534</td><td>4.94%</td></tr>
-            <tr><td>9</td><td>2022-05-05</td><td>Fed 升息 3 碼・鷹派聲明</td><td>▼ 512</td><td>3.19%</td></tr>
-            <tr><td>10</td><td>2021-05-12</td><td>本土 COVID 三級警戒爆發</td><td>▼ 472</td><td>3.81%</td></tr>
-          </tbody>
+          <tbody id="hist-tbody"></tbody>
         </table>
         <div class="hist-note">* 數據為近似值，以台灣加權股價指數（TAIEX）單日收盤跌點計算。台指期貨當日波動可能更劇烈。不構成投資建議。</div>
       </div>
@@ -620,6 +680,22 @@
 </div>
 
 <script>
+  const APP_VERSION         = 'v3.0.1';
+  const FALLBACK_MARGIN_DATE = '2026-07-02';
+
+  const HIST_DROPS = [
+    { date: '2025-04-07', event: '川普關稅衝擊・亞太黑色星期一', points: 1862, pct: 9.70 },
+    { date: '2024-08-05', event: '日圓套利崩解・日本股市熔斷',   points: 1807, pct: 8.35 },
+    { date: '2022-01-20', event: 'Fed 急升息恐慌',               points:  855, pct: 4.88 },
+    { date: '2000-03-20', event: '台灣總統大選後首交易日',        points:  744, pct: 6.31 },
+    { date: '2020-03-19', event: 'COVID-19 疫情崩盤',            points:  698, pct: 5.83 },
+    { date: '2020-03-12', event: 'COVID-19 歐美全面擴散',        points:  585, pct: 4.60 },
+    { date: '2022-09-13', event: '美 CPI 爆冷・升息預期暴升',    points:  576, pct: 3.52 },
+    { date: '2008-10-06', event: '全球金融海嘯・雷曼餘震',       points:  534, pct: 4.94 },
+    { date: '2022-05-05', event: 'Fed 升息 3 碼・鷹派聲明',      points:  512, pct: 3.19 },
+    { date: '2021-05-12', event: '本土 COVID 三級警戒爆發',      points:  472, pct: 3.81 },
+  ];
+
   const g = id => document.getElementById(id);
 
   function wan(n) {
@@ -650,19 +726,121 @@
     });
   }
 
+  function readNumber(id, fallback, min = 0) {
+    const v = Number(g(id).value);
+    if (!Number.isFinite(v) || v < min) return fallback;
+    return v;
+  }
+
   function getP() {
     return {
-      idx: +g('v-idx').value || 47000,
-      eq:  (+g('v-eq').value  || 2000) * 10000,
-      im:  (+g('v-im').value  || 63.6) * 10000,
-      mm:  (+g('v-mm').value  || 48.8) * 10000,
-      pv:  +g('v-pv').value || 200,
-      st:  +g('v-st').value || 2000,
-      ld:  (+g('v-ld').value || 10) / 100,
+      idx: readNumber('v-idx', 47000, 1),
+      eq:  readNumber('v-eq',  2000,  1) * 10000,
+      im:  readNumber('v-im',  63.6,  0.1) * 10000,
+      mm:  readNumber('v-mm',  48.8,  0.1) * 10000,
+      pv:  readNumber('v-pv',  200,   1),
+      st:  readNumber('v-st',  2000,  1),
+      ld:  readNumber('v-ld',  10,    1) / 100,
     };
   }
 
   const pinnedRows = new Set();
+  let currentP = null, currentCv = 0, currentLimitLoss = 0;
+
+  // ── STRESS QUICK BUTTONS ──
+  function setStress(pts) { g('v-st').value = pts; render(); }
+  function setStressMax()  { setStress(Math.max(...HIST_DROPS.map(d => d.points))); }
+  function applyStressTest(pts) { g('v-st').value = pts; closeHist(); render(); }
+
+  function renderHistTable() {
+    const tbody = g('hist-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = HIST_DROPS.map((d, i) => `
+      <tr onclick="applyStressTest(${d.points})" style="cursor:pointer" title="點擊套用到壓力測試">
+        <td>${i + 1}</td><td>${d.date}</td><td>${d.event}</td>
+        <td>▼ ${d.points.toLocaleString('zh-TW')}</td>
+        <td>${d.pct.toFixed(2)}%</td>
+      </tr>`).join('');
+  }
+
+  // ── DECISION SUMMARY ──
+  function getRiskLevel(lev, mPct) {
+    if (lev < 4 && mPct < 30)  return { cls: 'risk-low',  label: '低風險' };
+    if (lev >= 8 || mPct >= 60) return { cls: 'risk-high', label: '高風險' };
+    return { cls: 'risk-mid', label: '謹慎' };
+  }
+
+  function updateDecisionSummary(p, cv) {
+    const hint = g('decision-hint');
+    const grid = g('decision-grid');
+    if (!hint || !grid) return;
+    const sel = [...pinnedRows].sort((a, b) => a - b);
+    if (!sel.length || !p) {
+      hint.style.display = ''; grid.style.display = 'none'; return;
+    }
+    hint.style.display = 'none'; grid.style.display = '';
+    const n = sel[0];
+    const lev      = (n * cv) / p.eq;
+    const mPct     = (n * p.im) / p.eq * 100;
+    const profit1k = n * 100 * p.pv;
+    const liqIdx   = p.idx - (p.eq - n * p.mm) / (n * p.pv);
+    const stressLoss = n * p.st * p.pv;
+    const risk  = getRiskLevel(lev, mPct);
+    const levCls = lev < 4 ? 'g' : lev < 8 ? 'a' : 'r';
+    const mCls   = mPct > 95 ? 'r' : mPct > 75 ? 'a' : 'q';
+    const extra  = sel.length > 1
+      ? `<div style="font-size:9px;color:var(--txt3);margin-top:2px">+ ${sel.slice(1).join('、')} 口</div>` : '';
+    grid.innerHTML = `
+      <div><div class="dc-lbl">選定口數</div>
+        <div class="dc-val" style="color:#C9A040;font-size:17px">${n} 口</div>${extra}</div>
+      <div><div class="dc-lbl">槓桿倍數</div>
+        <div class="dc-val ${levCls}">${num(lev, 2)}x</div></div>
+      <div><div class="dc-lbl">保證金使用率</div>
+        <div class="dc-val ${mCls}">${num(mPct, 1)}%</div></div>
+      <div><div class="dc-lbl">每 100 點損益</div>
+        <div class="dc-val" style="color:var(--txt)">±${wan(profit1k)}</div></div>
+      <div><div class="dc-lbl">壓測後損失</div>
+        <div class="dc-val g">▼ ${wan(stressLoss)}</div></div>
+      <div><div class="dc-lbl">追繳風險點位</div>
+        <div class="dc-val" style="color:var(--red)">${num(liqIdx, 0)}</div></div>
+      <div><div class="dc-lbl">風險等級</div>
+        <div style="margin-top:5px"><span class="risk-badge ${risk.cls}">${risk.label}</span></div></div>
+    `;
+  }
+
+  // ── LOCALSTORAGE ──
+  const STORE_KEY = 'taifexLeverageCalc.settings.v1';
+
+  function saveSettings() {
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify({
+        mode:   document.querySelector('.mode-tab.active').dataset.mode,
+        idx:    g('v-idx').value,
+        eq:     g('v-eq').value,
+        st:     g('v-st').value,
+        ld:     g('v-ld').value,
+        pinned: [...pinnedRows]
+      }));
+    } catch(_) {}
+  }
+
+  function loadSettings() {
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (!raw) return;
+      const s = JSON.parse(raw);
+      if (s.idx) g('v-idx').value = s.idx;
+      if (s.eq)  g('v-eq').value  = s.eq;
+      if (s.st)  g('v-st').value  = s.st;
+      if (s.ld)  g('v-ld').value  = s.ld;
+      if (s.mode) {
+        document.querySelectorAll('.mode-tab').forEach(b =>
+          b.classList.toggle('active', b.dataset.mode === s.mode)
+        );
+      }
+      if (Array.isArray(s.pinned)) s.pinned.forEach(n => pinnedRows.add(+n));
+    } catch(_) {}
+  }
 
   function updateSel(cv, limitLoss) {
     const sel = [...pinnedRows].sort((a, b) => a - b).slice(0, 2);
@@ -694,19 +872,34 @@
 
   function render() {
     const p = getP();
+    currentP = p;
     g('disp-idx').textContent = num(p.idx);
 
-    const cv       = p.idx * p.pv;               // contract value per lot
-    const limitLoss = p.idx * p.ld * p.pv;        // loss per lot at limit-down
-    const maxOpen  = Math.floor(p.eq / p.im);
-    // Stress-safe: eq - n*st*pv >= n*mm  =>  n <= eq / (st*pv + mm)
+    const cv        = p.idx * p.pv;
+    const limitLoss = p.idx * p.ld * p.pv;
+    const maxOpen   = Math.floor(p.eq / p.im);
     const stressMax = Math.max(0, Math.floor(p.eq / (p.st * p.pv + p.mm)));
+    currentCv = cv; currentLimitLoss = limitLoss;
 
     g('s-cv').textContent = wan(cv);
     updateSel(cv, limitLoss);
     g('s-ml').textContent = maxOpen + ' 口';
     g('s-ll').textContent = '▼ ' + wan(limitLoss);
     g('s-sm').textContent = stressMax + ' 口';
+
+    // Risk mode recommendations
+    let rmC = 0, rmS = 0, rmA = 0;
+    for (let n = 1; n <= 50; n++) {
+      if (n * p.im > p.eq) break;
+      const lev  = (n * cv) / p.eq;
+      const mPct = (n * p.im) / p.eq * 100;
+      if (lev <= 4 && mPct <= 30) rmC = n;
+      if (lev <= 6 && mPct <= 50) rmS = n;
+      if (lev <= 8 && mPct <= 70) rmA = n;
+    }
+    g('s-rm-c').textContent = rmC > 0 ? rmC + ' 口' : '—';
+    g('s-rm-s').textContent = rmS > 0 ? rmS + ' 口' : '—';
+    g('s-rm-a').textContent = rmA > 0 ? rmA + ' 口' : '—';
 
     const tbody = g('tbody');
     tbody.innerHTML = '';
@@ -742,11 +935,6 @@
         else if (n > stressMax) tr.classList.add('stress-zone');
       }
       if (pinnedRows.has(n)) tr.classList.add('pinned');
-      tr.addEventListener('click', () => {
-        if (pinnedRows.has(n)) { pinnedRows.delete(n); tr.classList.remove('pinned'); }
-        else                   { pinnedRows.add(n);    tr.classList.add('pinned');    }
-        updateSel(cv, limitLoss);
-      });
 
       const liqCell    = canOpen
         ? `<span class="${liqCls}">${num(liqDist, 0)} pt</span>`
@@ -767,12 +955,22 @@
         <td>${liqCell}</td>
         <td>${liqIdxCell}</td>
         <td>${stressCell}</td>
-        <td class="r">+${wan(profit1k)}</td>
+        <td class="r">${wan(profit1k)}</td>
         <td class="${mPctCls}">${num(marginPct, 1)}%</td>
         <td class="d">${wan(avail)}</td>
       `;
+      tr.addEventListener('click', () => {
+        if (pinnedRows.has(n)) { pinnedRows.delete(n); tr.classList.remove('pinned'); }
+        else                   { pinnedRows.add(n);    tr.classList.add('pinned');    }
+        updateSel(currentCv, currentLimitLoss);
+        updateDecisionSummary(currentP, currentCv);
+        saveSettings();
+      });
       tbody.appendChild(tr);
     }
+
+    updateDecisionSummary(p, cv);
+    saveSettings();
   }
 
   // ── TAIFEX margin data (核對日期 2026-07-02，來源截圖確認)
@@ -846,6 +1044,8 @@
   }
 
   async function init() {
+    loadSettings();
+    renderHistTable();
     setStatus('', '保證金資料載入中…');
     trackVisit();
     const live = await fetchTaifexMargins();
@@ -859,7 +1059,7 @@
       const today = new Date().toISOString().slice(0, 10);
       setStatus('live', '✓ 保證金已自動更新 · ' + today);
     } else {
-      setStatus('stored', '⚠ 保證金數字無法自動取得，目前顯示 2026-07-02 版本，請點右側連結確認是否有異動');
+      setStatus('stored', `⚠ 保證金數字無法自動取得，目前顯示 ${FALLBACK_MARGIN_DATE} 版本，請點右側連結確認是否有異動`);
     }
     applyActiveMode();
     render();
