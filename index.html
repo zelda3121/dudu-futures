@@ -1,4 +1,4 @@
-<title>嘟嘟台指期槓桿計算機 v2.9.0</title>
+<title>嘟嘟台指期槓桿計算機 v3.0.0</title>
 <style>
   :root {
     --bg:      #0C1220;
@@ -149,22 +149,22 @@
   tbody td:nth-child(2) { font-size: 15px; font-weight: 800; }
 
   /* ── 距強制平倉 + 強制平倉點位 danger frame ── */
-  thead th:nth-child(6),
-  thead th:nth-child(7),
-  tbody td:nth-child(6),
-  tbody td:nth-child(7) { background: rgba(240,84,84,.1); }
-  thead th:nth-child(6),
-  tbody td:nth-child(6) {
+  thead th:nth-child(3),
+  thead th:nth-child(4),
+  tbody td:nth-child(3),
+  tbody td:nth-child(4) { background: rgba(240,84,84,.1); }
+  thead th:nth-child(3),
+  tbody td:nth-child(3) {
     border-left: 2px solid rgba(240,84,84,.5);
     box-shadow: inset 3px 0 8px rgba(240,84,84,.08);
   }
-  thead th:nth-child(7),
-  tbody td:nth-child(7) {
+  thead th:nth-child(4),
+  tbody td:nth-child(4) {
     border-right: 2px solid rgba(240,84,84,.5);
     box-shadow: inset -3px 0 8px rgba(240,84,84,.08);
   }
-  thead th:nth-child(6),
-  thead th:nth-child(7) { color: var(--red); }
+  thead th:nth-child(3),
+  thead th:nth-child(4) { color: var(--red); }
 
   /* row states */
   tr.closed td { opacity: .22; }
@@ -431,7 +431,8 @@
   }
   .leg { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--txt3); }
   .leg-d { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-  .note { margin-left: auto; font-size: 10.5px; color: var(--txt3); opacity: .4; }
+  .visit-cnt-wrap { margin-left: auto; font-size: 10px; color: var(--txt3); opacity: .5; font-family: var(--mono); white-space: nowrap; }
+  .note { font-size: 10.5px; color: var(--txt3); opacity: .4; }
 </style>
 
 <div id="app">
@@ -444,7 +445,7 @@
       <span class="hdr-sep">·</span>
       <span class="hdr-eye">我們這一家 &amp; 嘟嘟這一家 專用</span>
       <span class="hdr-sep">·</span>
-      <span class="ver">v2.9.0</span>
+      <span class="ver">v3.0.0</span>
       <span class="hdr-sep">·</span>
       <span class="hdr-tagline">Sammy Hsu</span>
     </div>
@@ -500,7 +501,7 @@
       </div>
     </div>
     <div class="p coffee">
-      <div class="p-lbl">壓力測試跌幅<span class="tip" data-tip="自訂壓測情境：假設指數突然下跌這麼多點，右側表格「壓測後剩餘資金」欄會顯示各口數是否能撐住">?</span><button class="hist-btn" onclick="toggleHist()">歷史大跌排行</button></div>
+      <div class="p-lbl">壓力測試跌幅<span class="tip" data-tip="自訂壓測情境：假設指數突然下跌這麼多點，右側表格「壓測後損失資金」欄會顯示各口數的損失金額及是否爆倉">?</span><button class="hist-btn" onclick="toggleHist()">歷史大跌排行</button></div>
       <div class="p-row">
         <input class="p-in" id="v-st" type="number" value="2000" min="1" title="假設下跌點數" oninput="render()">
         <span class="p-unit">點</span>
@@ -554,12 +555,12 @@
         <tr>
           <th title="持有的合約口數">口數</th>
           <th title="合約總面值 ÷ 帳戶權益，倍數越高風險越大">槓桿倍數</th>
-          <th title="已凍結保證金佔帳戶權益的比例">保證金使用率</th>
-          <th title="帳戶權益扣掉已凍結保證金後，還能再開倉的資金">剩餘可用資金</th>
-          <th title="若指數上漲 100 點，這個部位的獲利金額">漲 100 點獲利</th>
           <th title="帳戶從現在跌到強制平倉線，還能承受幾點的下跌">距強制平倉(點)</th>
           <th title="指數跌到這個點位時，帳戶將觸發強制平倉">強制平倉點位</th>
-          <th title="指數急跌「壓力測試跌幅」點數後，帳戶剩下多少資金。顯示紅色代表已爆倉，橘色代表需追繳保證金" style="color:var(--coffee)">壓測後剩餘資金</th>
+          <th title="指數急跌「壓力測試跌幅」點數後，損失了多少資金。標示「爆倉」代表帳戶歸零，「需追繳」代表需補繳保證金" style="color:var(--green)">壓測後損失資金</th>
+          <th title="若指數上漲 100 點，這個部位的獲利金額">每漲 100 點獲利</th>
+          <th title="已凍結保證金佔帳戶權益的比例">保證金使用率</th>
+          <th title="帳戶權益扣掉已凍結保證金後，還能再開倉的資金">剩餘可用資金</th>
         </tr>
       </thead>
       <tbody id="tbody"></tbody>
@@ -612,6 +613,7 @@
       <span style="width:18px;height:7px;border-radius:2px;background:rgba(255,80,80,.2);flex-shrink:0;display:inline-block"></span>
       壓測危險區
     </div>
+    <span class="visit-cnt-wrap">訪客 <span id="visit-cnt">—</span></span>
     <span class="note">數據僅供參考，非即時市場資訊 · 不構成投資建議</span>
   </footer>
 
@@ -721,17 +723,15 @@
       const liqDist = (p.eq - n * p.mm) / (n * p.pv);
       const liqIdx  = p.idx - liqDist;
 
-      // Stress test remaining equity
-      const stressRem = p.eq - n * p.st * p.pv;
-      const stressOk  = stressRem >= n * p.mm;
+      // Stress test
+      const stressLoss = n * p.st * p.pv;
+      const stressRem  = p.eq - stressLoss;
+      const stressOk   = stressRem >= n * p.mm;
 
       // Classes
       const levCls  = lev < 4 ? 'g' : lev < 8 ? 'a' : 'r';
       const mPctCls = marginPct > 95 ? 'r' : marginPct > 75 ? 'a' : 'q';
       const liqCls  = liqDist < p.st ? 'r' : liqDist < p.st * 1.5 ? 'a' : 'q';
-      let stressCls = 'c';
-      if (stressRem < 0) stressCls = 'r';
-      else if (!stressOk) stressCls = 'a';
 
       const tr = document.createElement('tr');
       if (!canOpen) {
@@ -756,19 +756,20 @@
         ? `<span class="${liqCls}">${num(liqIdx, 0)}</span>`
         : '<span class="q">—</span>';
 
-      const stressCell = stressRem >= 0
-        ? `<span class="${stressCls}">${wan(stressRem)}</span>`
-        : '<span class="g">爆倉</span>';
+      let stressLabel = '';
+      if (stressRem < 0) stressLabel = ' <span class="r" style="font-size:9px;opacity:.85">爆倉</span>';
+      else if (!stressOk) stressLabel = ' <span class="a" style="font-size:9px;opacity:.85">需追繳</span>';
+      const stressCell = `<span class="g">▼ ${wan(stressLoss)}</span>${stressLabel}`;
 
       tr.innerHTML = `
         <td>${n}</td>
         <td class="${levCls}">${num(lev, 2)}x</td>
-        <td class="${mPctCls}">${num(marginPct, 1)}%</td>
-        <td class="d">${wan(avail)}</td>
-        <td class="r">+${wan(profit1k)}</td>
         <td>${liqCell}</td>
         <td>${liqIdxCell}</td>
         <td>${stressCell}</td>
+        <td class="r">+${wan(profit1k)}</td>
+        <td class="${mPctCls}">${num(marginPct, 1)}%</td>
+        <td class="d">${wan(avail)}</td>
       `;
       tbody.appendChild(tr);
     }
@@ -834,8 +835,19 @@
     return Object.keys(found).length === 3 ? found : null;
   }
 
+  async function trackVisit() {
+    try {
+      const res = await fetch('https://api.countapi.xyz/hit/zelda3121-dudu-futures/visits');
+      if (!res.ok) return;
+      const data = await res.json();
+      const el = g('visit-cnt');
+      if (el && data && data.value) el.textContent = data.value.toLocaleString('zh-TW');
+    } catch (_) {}
+  }
+
   async function init() {
     setStatus('', '保證金資料載入中…');
+    trackVisit();
     const live = await fetchTaifexMargins();
     if (live) {
       Object.keys(live).forEach(key => {
