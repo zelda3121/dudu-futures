@@ -1,0 +1,879 @@
+<title>嘟嘟台指期槓桿計算機 v2.9.0</title>
+<style>
+  :root {
+    --bg:      #0C1220;
+    --surf:    #121C2C;
+    --surf2:   #192438;
+    --bdr:     #222E44;
+    --bdr2:    #2C3C58;
+    --acc:     #5496F8;
+    --acc-dim: rgba(84,150,248,.14);
+    --green:   #34D978;
+    --amber:   #F5A623;
+    --red:     #F05454;
+    --coffee:  #D08818;
+    --cof-dim: rgba(208,136,24,.11);
+    --txt:     #D4E4F8;
+    --txt2:    #6E90B8;
+    --txt3:    #6080A8;
+    --mono:    'SF Mono','Cascadia Code','Fira Code','Consolas','Monaco',monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%;
+    background: var(--bg); color: var(--txt);
+    font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+    font-size: 13px; line-height: 1.5;
+  }
+  #app { display: flex; flex-direction: column; height: 100%; }
+
+  /* ── HEADER ── */
+  .hdr {
+    padding: 8px 20px;
+    background: var(--surf);
+    border-bottom: 1px solid var(--bdr);
+    box-shadow: inset 0 2.5px 0 #C9880C;
+    display: flex; align-items: center; position: relative;
+  }
+  .hdr-main {
+    position: absolute; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; flex-wrap: nowrap; gap: 5px;
+    max-width: calc(100% - 200px); overflow: hidden;
+  }
+  .hdr-tagline { font-size: 11px; color: #8AAAD0; }
+  .hdr-tagline .paren { opacity: .6; font-size: 10px; }
+  .hdr-sep { color: var(--bdr2); font-size: 12px; }
+  .hdr-name { font-size: 14px; font-weight: 800; letter-spacing: -.02em; color: #E8D4A0; }
+  .hdr-eye  { font-size: 10px; letter-spacing: .07em; text-transform: uppercase; color: var(--txt3); }
+  .ver {
+    font-family: var(--mono); font-size: 10px;
+    background: rgba(201,136,12,.15); border: 1px solid rgba(201,136,12,.4);
+    color: #D4A030; padding: 1px 6px; border-radius: 3px;
+    letter-spacing: .03em;
+  }
+  .hdr-ticker { margin-left: auto; display: flex; align-items: center; gap: 9px; }
+  .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--green); box-shadow: 0 0 8px var(--green);
+    animation: blink 2.6s ease-in-out infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+  .idx-val {
+    font-family: var(--mono); font-size: 22px; font-weight: 700;
+    color: var(--acc); font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 24px rgba(84,150,248,.35);
+  }
+
+  /* ── PARAMS ── */
+  .params {
+    display: grid; grid-template-columns: repeat(7,1fr);
+    gap: 1px; background: var(--bdr); border-bottom: 1px solid var(--bdr);
+  }
+  @media(max-width:960px){ .params{ grid-template-columns: repeat(4,1fr); } }
+  @media(max-width:520px){ .params{ grid-template-columns: repeat(2,1fr); } }
+  .p { background: var(--surf); padding: 11px 14px 10px; }
+  .p-lbl {
+    font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--txt2); margin-bottom: 6px;
+    display: flex; align-items: center;
+  }
+  .p-row { display: flex; align-items: baseline; gap: 5px; }
+  .p-in {
+    background: transparent; border: none;
+    border-bottom: 1.5px solid var(--acc-dim);
+    color: var(--txt); font-family: var(--mono); font-size: 16px; font-weight: 600;
+    font-variant-numeric: tabular-nums; padding: 2px 0;
+    flex: 1; min-width: 0; width: 0; outline: none;
+    transition: border-color .15s;
+  }
+  .p-in:focus { border-bottom-color: var(--acc); }
+  .p-unit { font-size: 11px; color: var(--txt2); white-space: nowrap; flex-shrink: 0; }
+
+  /* ── SUMMARY ── */
+  .summ {
+    display: grid; grid-template-columns: repeat(4,1fr);
+    gap: 1px; background: var(--bdr); border-bottom: 1px solid var(--bdr);
+  }
+  @media(max-width:600px){ .summ{ grid-template-columns: repeat(2,1fr); } }
+  .s { background: var(--surf2); padding: 10px 18px; }
+  .s-lbl { font-size: 9.5px; letter-spacing: .07em; text-transform: uppercase; color: var(--txt3); }
+  .s-val {
+    font-family: var(--mono); font-size: 15px; font-weight: 700;
+    font-variant-numeric: tabular-nums; margin-top: 4px; color: var(--txt);
+  }
+
+  /* ── TABLE ── */
+  .twrap { flex: 1; overflow: auto; min-height: 0; }
+  table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  thead {
+    position: sticky; top: 0; z-index: 4;
+    background: rgba(18,28,44,.96);
+    box-shadow: 0 1px 0 var(--bdr2), 0 4px 16px rgba(0,0,0,.5);
+  }
+  th {
+    font-size: 9.5px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase;
+    color: var(--txt3); padding: 10px 14px; text-align: right;
+    border-bottom: 1.5px solid var(--bdr2); white-space: nowrap;
+  }
+  th:first-child { text-align: center; width: 52px; }
+  td {
+    padding: 8px 14px; text-align: right;
+    border-bottom: 1px solid var(--bdr);
+    font-family: var(--mono); font-size: 12.5px;
+  }
+  td:first-child {
+    text-align: center;
+    font-family: -apple-system, system-ui, sans-serif;
+    font-size: 13px; font-weight: 700; color: var(--txt2);
+  }
+  tbody tr:hover td { background: rgba(84,150,248,.09) !important; }
+
+  /* ── 口數 + 槓桿倍數 gold frame ── */
+  thead th:nth-child(1),
+  thead th:nth-child(2),
+  tbody td:nth-child(1),
+  tbody td:nth-child(2) { background: rgba(201,136,12,.1); }
+  thead th:nth-child(1),
+  tbody td:nth-child(1) {
+    border-left: 2.5px solid #C9880C;
+    box-shadow: inset 4px 0 10px rgba(201,136,12,.12);
+  }
+  thead th:nth-child(2),
+  tbody td:nth-child(2) {
+    border-right: 2.5px solid #C9880C;
+    box-shadow: inset -4px 0 10px rgba(201,136,12,.12);
+  }
+  thead th:nth-child(1),
+  thead th:nth-child(2) { color: #C9A040; font-size: 10.5px; font-weight: 700; letter-spacing: .05em; }
+  tbody td:nth-child(1) { font-size: 14.5px; font-weight: 800; color: #C9A040; }
+  tbody td:nth-child(2) { font-size: 15px; font-weight: 800; }
+
+  /* ── 距強制平倉 + 強制平倉點位 danger frame ── */
+  thead th:nth-child(6),
+  thead th:nth-child(7),
+  tbody td:nth-child(6),
+  tbody td:nth-child(7) { background: rgba(240,84,84,.1); }
+  thead th:nth-child(6),
+  tbody td:nth-child(6) {
+    border-left: 2px solid rgba(240,84,84,.5);
+    box-shadow: inset 3px 0 8px rgba(240,84,84,.08);
+  }
+  thead th:nth-child(7),
+  tbody td:nth-child(7) {
+    border-right: 2px solid rgba(240,84,84,.5);
+    box-shadow: inset -3px 0 8px rgba(240,84,84,.08);
+  }
+  thead th:nth-child(6),
+  thead th:nth-child(7) { color: var(--red); }
+
+  /* row states */
+  tr.closed td { opacity: .22; }
+  tr.boundary-open td   { background: rgba(232,168,32,.1); }
+  tr.boundary-open td:first-child { color: var(--amber); }
+  tr.stress-zone td     { background: rgba(240,84,84,.07); }
+  tr.boundary-stress td { background: rgba(240,84,84,.14); }
+  tr.boundary-stress td:first-child { color: var(--red); }
+
+  /* ── ROW PINNING ── */
+  tbody tr { cursor: pointer; user-select: none; }
+  tbody tr.pinned td {
+    background: rgba(212,160,12,.22) !important;
+    box-shadow: inset 0 1.5px 0 rgba(212,160,12,.5), inset 0 -1.5px 0 rgba(212,160,12,.5) !important;
+    font-size: 16px;
+  }
+  tbody tr.pinned td:nth-child(1) {
+    font-size: 18px;
+    color: #E8C050;
+    font-weight: 800;
+  }
+  tbody tr.pinned td:nth-child(2) {
+    font-size: 19px;
+    font-weight: 800;
+    text-shadow: 0 0 16px rgba(212,160,12,.7);
+  }
+  tbody tr.pinned td:first-child::after {
+    content: ' ★';
+    font-size: 11px;
+    color: #F0C840;
+    opacity: .9;
+  }
+
+  /* color helpers */
+  .g  { color: var(--green);  }
+  .a  { color: var(--amber);  }
+  .r  { color: var(--red);    }
+  .c  { color: var(--coffee); }
+  .d  { color: var(--txt2);   }
+  .q  { color: var(--txt);    }
+  tbody td.g { color: var(--green); }
+  tbody td.a { color: var(--amber); }
+  tbody td.r { color: var(--red);   }
+
+  /* ── COFFEE PARAM (壓力測試) ── */
+  .p.coffee {
+    background: var(--cof-dim);
+    border-top: 2px solid var(--coffee);
+  }
+  .p.coffee .p-lbl { color: var(--coffee); }
+  .p.coffee .p-in  { color: #F0B040; border-bottom-color: rgba(208,136,24,.35); }
+  .p.coffee .p-in:focus { border-bottom-color: var(--coffee); }
+  .p.coffee .tip   { border-color: rgba(208,136,24,.6); background: var(--cof-dim); color: var(--coffee); }
+
+  /* ── MODE SWITCHER ── */
+  .mode-bar {
+    padding: 9px 20px;
+    background: var(--surf);
+    border-bottom: 1px solid var(--bdr);
+    display: flex; align-items: center; gap: 14px;
+  }
+  .mode-lbl { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--txt3); white-space: nowrap; }
+  .mode-tabs {
+    display: flex; gap: 2px;
+    background: #080806; border: 1px solid #2C2208;
+    border-radius: 4px; padding: 2px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.04);
+  }
+  .mode-tab {
+    background: transparent; color: #7A5E22;
+    font-family: -apple-system, system-ui, sans-serif;
+    font-size: 12px; font-weight: 600; padding: 5px 16px;
+    border: none; cursor: pointer; border-radius: 2px;
+    transition: background .12s, color .12s;
+    white-space: nowrap; line-height: 1.4;
+  }
+  .mode-tab sub {
+    font-size: 9.5px; font-weight: 400; opacity: .7;
+    vertical-align: baseline; margin-left: 3px;
+  }
+  .mode-tab:hover { background: rgba(201,136,12,.22); color: #D4960A; }
+  .mode-tab.active {
+    background: linear-gradient(180deg, #D9960C 0%, #B87A08 100%);
+    color: #1A0E00;
+    box-shadow: 0 1px 3px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,210,100,.3);
+  }
+  .mode-tab.active sub { opacity: 1; color: #3A1E00; }
+
+  /* ── DATA STATUS ── */
+  .data-status {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 10.5px; color: var(--txt3);
+  }
+  .hint-bar .data-status { margin-left: auto; }
+  .ds-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--txt3); flex-shrink: 0;
+    transition: background .3s, box-shadow .3s;
+  }
+  .ds-dot.live   { background: var(--green); box-shadow: 0 0 7px var(--green); }
+  .ds-dot.stored { background: var(--amber); }
+  .ds-dot.error  { background: var(--red); }
+  .ds-text { white-space: nowrap; }
+  .ds-link {
+    color: var(--acc); text-decoration: none;
+    border-bottom: 1px solid var(--acc-dim);
+    font-size: 10.5px; white-space: nowrap;
+    transition: color .15s, border-color .15s;
+  }
+  .ds-link:hover { color: var(--txt); border-color: var(--txt3); }
+  .ds-sep { color: var(--bdr2); }
+  .ds-retry {
+    background: none; border: 1px solid var(--bdr2);
+    color: var(--txt3); font-size: 10px; padding: 2px 8px;
+    cursor: pointer; border-radius: 3px;
+    font-family: -apple-system, system-ui, sans-serif;
+    transition: border-color .15s, color .15s; white-space: nowrap;
+  }
+  .ds-retry:hover { border-color: var(--acc); color: var(--acc); }
+
+  /* ── PRIMARY PARAMS ── */
+  .p.primary {
+    background: rgba(201,136,12,.1);
+    border-top: 2.5px solid #C9880C;
+  }
+  .p.primary .p-lbl { color: #D4A040; opacity: 1; }
+  .p.primary .p-in  { font-size: 17px; color: #F0C050; border-bottom-color: rgba(201,136,12,.4); }
+  .p.primary .p-in:focus { border-bottom-color: #C9880C; }
+  .p-badge {
+    display: inline-block;
+    font-size: 8.5px; letter-spacing: .06em; text-transform: uppercase;
+    color: #1A0E00; background: #C9880C;
+    padding: 0 5px; border-radius: 2px;
+    margin-left: 5px; vertical-align: middle;
+    line-height: 16px; font-weight: 700;
+  }
+  .hint-bar {
+    padding: 7px 20px;
+    background: var(--surf);
+    border-bottom: 1px solid var(--bdr);
+    font-size: 11px; color: var(--txt3);
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  /* ── TOOLTIP ── */
+  .tip {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 1.5px solid rgba(201,136,12,.55);
+    background: rgba(201,136,12,.12);
+    color: #D4A030;
+    font-size: 10px; font-weight: 800; font-style: normal;
+    cursor: default; margin-left: 6px; vertical-align: middle;
+    position: relative; flex-shrink: 0; line-height: 1;
+  }
+  .tip::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 9px);
+    left: 50%; transform: translateX(-50%) translateY(4px);
+    background: #1E2C42;
+    color: var(--txt);
+    font-size: 12px; font-weight: 400; line-height: 1.55;
+    padding: 8px 12px; border-radius: 4px; white-space: nowrap;
+    border: 1px solid var(--bdr2);
+    box-shadow: 0 8px 24px rgba(0,0,0,.5);
+    pointer-events: none; opacity: 0;
+    transition: opacity .15s, transform .15s; z-index: 100;
+  }
+  .tip::before {
+    content: ''; position: absolute;
+    bottom: calc(100% + 4px); left: 50%; transform: translateX(-50%);
+    border: 5px solid transparent; border-top-color: var(--bdr2);
+    pointer-events: none; opacity: 0; transition: opacity .15s; z-index: 100;
+  }
+  .tip:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .tip:hover::before { opacity: 1; }
+  .p:not(.primary) .tip {
+    border-color: rgba(84,150,248,.55);
+    background: rgba(84,150,248,.1);
+    color: var(--acc);
+  }
+
+  /* ── HISTORY BUTTON ── */
+  .hist-btn {
+    display: inline-flex; align-items: center;
+    font-size: 9px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+    color: var(--coffee); background: var(--cof-dim);
+    border: 1px solid rgba(208,136,24,.35);
+    padding: 2px 7px; border-radius: 3px;
+    cursor: pointer; margin-left: 7px;
+    transition: background .12s, border-color .12s;
+    font-family: -apple-system, system-ui, sans-serif;
+    white-space: nowrap; line-height: 1.6;
+  }
+  .hist-btn:hover { background: rgba(208,136,24,.22); border-color: var(--coffee); }
+
+  /* ── HISTORY OVERLAY / PANEL ── */
+  .hist-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,.6);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .hist-overlay.hidden { display: none; }
+  .hist-panel {
+    background: var(--surf); border: 1px solid var(--bdr2);
+    border-radius: 6px;
+    box-shadow: 0 0 0 1px rgba(201,136,12,.15), 0 32px 80px rgba(0,0,0,.7);
+    width: min(560px, 94vw); max-height: 82vh;
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .hist-head {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    padding: 14px 18px 11px; border-bottom: 1px solid var(--bdr);
+    gap: 12px;
+    box-shadow: inset 0 2px 0 #C9880C;
+  }
+  .hist-head-title { font-size: 13px; font-weight: 700; color: #E8D4A0; }
+  .hist-head-sub   { font-size: 10.5px; color: var(--txt3); margin-top: 2px; }
+  .hist-close {
+    background: none; border: 1px solid var(--bdr2); color: var(--txt3);
+    font-size: 13px; width: 26px; height: 26px; border-radius: 4px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: border-color .12s, color .12s; flex-shrink: 0;
+  }
+  .hist-close:hover { border-color: var(--red); color: var(--red); }
+  .hist-body { overflow-y: auto; padding: 10px 18px 14px; }
+  .hist-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  .hist-table th {
+    font-size: 9px; letter-spacing: .07em; text-transform: uppercase;
+    color: var(--txt3); padding: 6px 10px; text-align: right;
+    border-bottom: 1.5px solid var(--bdr2); white-space: nowrap;
+  }
+  .hist-table th:nth-child(1) { text-align: center; width: 24px; }
+  .hist-table th:nth-child(2),
+  .hist-table th:nth-child(3) { text-align: left; }
+  .hist-table td {
+    font-family: var(--mono); font-size: 12px;
+    padding: 7px 10px; text-align: right;
+    border-bottom: 1px solid var(--bdr);
+  }
+  .hist-table td:nth-child(1) { text-align: center; color: var(--txt3); font-family: -apple-system, system-ui, sans-serif; font-size: 11px; }
+  .hist-table td:nth-child(2) { text-align: left; }
+  .hist-table td:nth-child(3) { text-align: left; font-family: -apple-system, system-ui, sans-serif; font-size: 11.5px; color: var(--txt2); }
+  .hist-table td:nth-child(4) { color: var(--red); font-weight: 700; }
+  .hist-table td:nth-child(5) { color: var(--amber); }
+  .hist-table tbody tr:first-child td { background: rgba(240,84,84,.08); }
+  .hist-note { font-size: 10px; color: var(--txt3); margin-top: 10px; line-height: 1.55; }
+
+  /* ── S-SEL (selected rows contract value) ── */
+  .s-sel {
+    font-family: var(--mono); font-size: 10.5px; color: #D4A030;
+    margin-top: 5px; font-variant-numeric: tabular-nums; line-height: 1.65;
+    border-top: 1px solid rgba(201,136,12,.2); padding-top: 4px;
+  }
+  .s-sel-item { display: block; }
+
+  /* ── FOOTER ── */
+  .foot {
+    padding: 10px 20px; border-top: 1px solid var(--bdr);
+    background: var(--surf);
+    display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+    flex-shrink: 0;
+  }
+  .leg { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--txt3); }
+  .leg-d { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .note { margin-left: auto; font-size: 10.5px; color: var(--txt3); opacity: .4; }
+</style>
+
+<div id="app">
+
+  <header class="hdr">
+    <div class="hdr-main">
+      <span class="hdr-tagline">大多頭要幹嘛？當然是放空呀<span class="paren">(誤)</span></span>
+      <span class="hdr-sep">·</span>
+      <span class="hdr-name">嘟嘟台指期槓桿計算機</span>
+      <span class="hdr-sep">·</span>
+      <span class="hdr-eye">我們這一家 &amp; 嘟嘟這一家 專用</span>
+      <span class="hdr-sep">·</span>
+      <span class="ver">v2.9.0</span>
+      <span class="hdr-sep">·</span>
+      <span class="hdr-tagline">Sammy Hsu</span>
+    </div>
+    <div class="hdr-ticker">
+      <span class="dot"></span>
+      <span class="idx-val" id="disp-idx">47,000</span>
+    </div>
+  </header>
+
+  <div class="mode-bar">
+    <span class="mode-lbl">合約類型</span>
+    <div class="mode-tabs">
+      <button class="mode-tab active" data-mode="tx">大台 <sub>200元/點</sub></button>
+      <button class="mode-tab" data-mode="mtx">小台 <sub>50元/點</sub></button>
+      <button class="mode-tab" data-mode="mxf">微台 <sub>10元/點</sub></button>
+    </div>
+  </div>
+
+  <div class="params">
+    <div class="p primary">
+      <div class="p-lbl">當前指數 <span class="p-badge">主要輸入</span><span class="tip" data-tip="你打算買入或賣出台指期的指數點位。下單前在看盤軟體或券商 App 查看目前大盤的加權指數，填入那個數字即可">?</span></div>
+      <div class="p-row">
+        <input class="p-in" id="v-idx" type="number" value="47000" min="1" title="當前市場指數點位" oninput="render()">
+        <span class="p-unit">點</span>
+      </div>
+    </div>
+    <div class="p primary">
+      <div class="p-lbl">帳戶權益 <span class="p-badge">主要輸入</span><span class="tip" data-tip="期貨帳戶裡實際的資金。打開期貨看盤軟體，找「權益數」那個數字填進來（單位：萬元）">?</span></div>
+      <div class="p-row">
+        <input class="p-in" id="v-eq" type="number" value="2000" min="1" step="100" title="帳戶總權益（萬元）" oninput="render()">
+        <span class="p-unit">萬</span>
+      </div>
+    </div>
+    <div class="p">
+      <div class="p-lbl">初始保證金 /口<span class="tip" data-tip="開新部位時每口需凍結的資金。帳戶餘額不足一口初始保證金，就無法再加碼。切換合約類型時會自動帶入 TAIFEX 最新數值">?</span></div>
+      <div class="p-row">
+        <input class="p-in" id="v-im" type="number" value="63.6" min="0.1" step="0.1" title="每口合約初始保證金（萬元）" oninput="render()">
+        <span class="p-unit">萬</span>
+      </div>
+    </div>
+    <div class="p">
+      <div class="p-lbl">維持保證金 /口<span class="tip" data-tip="持倉中每口需維持的最低金額。帳戶跌破後，期貨商會追繳保證金，未補足則強制平倉（即爆倉）">?</span></div>
+      <div class="p-row">
+        <input class="p-in" id="v-mm" type="number" value="48.8" min="0.1" step="0.1" title="每口合約維持保證金（萬元）" oninput="render()">
+        <span class="p-unit">萬</span>
+      </div>
+    </div>
+    <div class="p">
+      <div class="p-lbl">每點價值<span class="tip" data-tip="指數每跳動 1 點，帳戶損益變動的金額。切換大台／小台／微台時會自動帶入正確數值">?</span></div>
+      <div class="p-row">
+        <input class="p-in" id="v-pv" type="number" value="200" min="1" title="每點報酬（元），大台=200、小台=50、微台=10" oninput="render()">
+        <span class="p-unit">元/點</span>
+      </div>
+    </div>
+    <div class="p coffee">
+      <div class="p-lbl">壓力測試跌幅<span class="tip" data-tip="自訂壓測情境：假設指數突然下跌這麼多點，右側表格「壓測後剩餘資金」欄會顯示各口數是否能撐住">?</span><button class="hist-btn" onclick="toggleHist()">歷史大跌排行</button></div>
+      <div class="p-row">
+        <input class="p-in" id="v-st" type="number" value="2000" min="1" title="假設下跌點數" oninput="render()">
+        <span class="p-unit">點</span>
+      </div>
+    </div>
+    <div class="p">
+      <div class="p-lbl">每日跌停幅度<span class="tip" data-tip="期交所規定的每日最大跌幅。目前台指期為 10%，用於試算單日若觸及跌停的最大損失">?</span></div>
+      <div class="p-row">
+        <input class="p-in" id="v-ld" type="number" value="10" min="1" max="50" title="每日最大跌幅（%）" oninput="render()">
+        <span class="p-unit">%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hint-bar">
+    <span class="p-badge">主要輸入</span>
+    一般使用只需填入「當前指數」與「帳戶權益」這兩項，其餘欄位已自動套用 TAIFEX 標準保證金數值。
+    <div class="data-status" id="data-status">
+      <span class="ds-dot" id="ds-dot"></span>
+      <span class="ds-text" id="ds-text">保證金資料載入中…</span>
+      <span class="ds-sep">·</span>
+      <a class="ds-link" id="ds-link" href="https://www.taifex.com.tw/cht/5/indexMarging" target="_blank" rel="noopener noreferrer">來源：TAIFEX ↗</a>
+      <button class="ds-retry" id="ds-retry" style="display:none" onclick="init()">↺ 重新抓取</button>
+    </div>
+  </div>
+
+  <div class="summ">
+    <div class="s">
+      <div class="s-lbl">每口合約面值</div>
+      <div class="s-val" id="s-cv">—</div>
+      <div class="s-sel" id="s-sel" style="display:none"></div>
+    </div>
+    <div class="s">
+      <div class="s-lbl">最大可開口數</div>
+      <div class="s-val" id="s-ml" style="color:var(--acc)">—</div>
+    </div>
+    <div class="s">
+      <div class="s-lbl">觸及跌停最大損失 /口</div>
+      <div class="s-val" id="s-ll" style="color:var(--green)">—</div>
+      <div class="s-sel" id="s-ll-sel" style="display:none;color:var(--green);border-top-color:rgba(52,217,120,.2)"></div>
+    </div>
+    <div class="s">
+      <div class="s-lbl">壓測下最多安全口數</div>
+      <div class="s-val" id="s-sm" style="color:var(--amber)">—</div>
+    </div>
+  </div>
+
+  <div class="twrap">
+    <table>
+      <thead>
+        <tr>
+          <th title="持有的合約口數">口數</th>
+          <th title="合約總面值 ÷ 帳戶權益，倍數越高風險越大">槓桿倍數</th>
+          <th title="已凍結保證金佔帳戶權益的比例">保證金使用率</th>
+          <th title="帳戶權益扣掉已凍結保證金後，還能再開倉的資金">剩餘可用資金</th>
+          <th title="若指數上漲 100 點，這個部位的獲利金額">漲 100 點獲利</th>
+          <th title="帳戶從現在跌到強制平倉線，還能承受幾點的下跌">距強制平倉(點)</th>
+          <th title="指數跌到這個點位時，帳戶將觸發強制平倉">強制平倉點位</th>
+          <th title="指數急跌「壓力測試跌幅」點數後，帳戶剩下多少資金。顯示紅色代表已爆倉，橘色代表需追繳保證金" style="color:var(--coffee)">壓測後剩餘資金</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="hist-overlay hidden" id="hist-overlay" onclick="closeHistOutside(event)">
+    <div class="hist-panel">
+      <div class="hist-head">
+        <div>
+          <div class="hist-head-title">台指 歷史最大單日跌幅 Top 10</div>
+          <div class="hist-head-sub">以台灣加權指數單日跌點排序 · 含 2025 最新事件 · 近似值，僅供風險情境參考</div>
+        </div>
+        <button class="hist-close" onclick="closeHist()">✕</button>
+      </div>
+      <div class="hist-body">
+        <table class="hist-table">
+          <thead>
+            <tr>
+              <th>#</th><th>日期</th><th>事件</th><th>跌點</th><th>跌幅</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>2025-04-07</td><td>川普關稅衝擊・亞太黑色星期一</td><td>▼ 1,862</td><td>9.70%</td></tr>
+            <tr><td>2</td><td>2024-08-05</td><td>日圓套利崩解・日本股市熔斷</td><td>▼ 1,807</td><td>8.35%</td></tr>
+            <tr><td>3</td><td>2022-01-20</td><td>Fed 急升息恐慌</td><td>▼ 855</td><td>4.88%</td></tr>
+            <tr><td>4</td><td>2000-03-20</td><td>台灣總統大選後首交易日</td><td>▼ 744</td><td>6.31%</td></tr>
+            <tr><td>5</td><td>2020-03-19</td><td>COVID-19 疫情崩盤</td><td>▼ 698</td><td>5.83%</td></tr>
+            <tr><td>6</td><td>2020-03-12</td><td>COVID-19 歐美全面擴散</td><td>▼ 585</td><td>4.60%</td></tr>
+            <tr><td>7</td><td>2022-09-13</td><td>美 CPI 爆冷・升息預期暴升</td><td>▼ 576</td><td>3.52%</td></tr>
+            <tr><td>8</td><td>2008-10-06</td><td>全球金融海嘯・雷曼餘震</td><td>▼ 534</td><td>4.94%</td></tr>
+            <tr><td>9</td><td>2022-05-05</td><td>Fed 升息 3 碼・鷹派聲明</td><td>▼ 512</td><td>3.19%</td></tr>
+            <tr><td>10</td><td>2021-05-12</td><td>本土 COVID 三級警戒爆發</td><td>▼ 472</td><td>3.81%</td></tr>
+          </tbody>
+        </table>
+        <div class="hist-note">* 數據為近似值，以台灣加權股價指數（TAIEX）單日收盤跌點計算。台指期貨當日波動可能更劇烈。不構成投資建議。</div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="foot">
+    <div class="leg"><span class="leg-d" style="background:var(--green)"></span>低槓桿 &lt;4x</div>
+    <div class="leg"><span class="leg-d" style="background:var(--amber)"></span>中槓桿 4–8x</div>
+    <div class="leg"><span class="leg-d" style="background:var(--red)"></span>高槓桿 ≥8x</div>
+    <div class="leg" style="gap:7px">
+      <span style="width:18px;height:7px;border-radius:2px;background:rgba(232,168,32,.3);flex-shrink:0;display:inline-block"></span>
+      保證金上限列
+    </div>
+    <div class="leg" style="gap:7px">
+      <span style="width:18px;height:7px;border-radius:2px;background:rgba(255,80,80,.2);flex-shrink:0;display:inline-block"></span>
+      壓測危險區
+    </div>
+    <span class="note">數據僅供參考，非即時市場資訊 · 不構成投資建議</span>
+  </footer>
+
+</div>
+
+<script>
+  const g = id => document.getElementById(id);
+
+  function wan(n) {
+    const sign = n < 0 ? '-' : '';
+    const abs = Math.abs(n);
+    return sign + (abs / 10000).toLocaleString('zh-TW', {
+      minimumFractionDigits: 2, maximumFractionDigits: 2
+    }) + ' 萬';
+  }
+
+  // 億/萬 auto-switch: >= 1億 shows 億, else 萬
+  function yi(n) {
+    const sign = n < 0 ? '-' : '';
+    const abs = Math.abs(n);
+    if (abs >= 100000000) {
+      return sign + (abs / 100000000).toLocaleString('zh-TW', {
+        minimumFractionDigits: 2, maximumFractionDigits: 2
+      }) + ' 億';
+    }
+    return sign + (abs / 10000).toLocaleString('zh-TW', {
+      minimumFractionDigits: 2, maximumFractionDigits: 2
+    }) + ' 萬';
+  }
+
+  function num(n, d) {
+    return n.toLocaleString('zh-TW', {
+      minimumFractionDigits: d ?? 0, maximumFractionDigits: d ?? 0
+    });
+  }
+
+  function getP() {
+    return {
+      idx: +g('v-idx').value || 47000,
+      eq:  (+g('v-eq').value  || 2000) * 10000,
+      im:  (+g('v-im').value  || 63.6) * 10000,
+      mm:  (+g('v-mm').value  || 48.8) * 10000,
+      pv:  +g('v-pv').value || 200,
+      st:  +g('v-st').value || 2000,
+      ld:  (+g('v-ld').value || 10) / 100,
+    };
+  }
+
+  const pinnedRows = new Set();
+
+  function updateSel(cv, limitLoss) {
+    const sel = [...pinnedRows].sort((a, b) => a - b).slice(0, 2);
+
+    const elCV = g('s-sel');
+    if (sel.length) {
+      elCV.innerHTML = sel.map(n =>
+        `<span class="s-sel-item">${n}口：共 ${yi(n * cv)}</span>`
+      ).join('');
+      elCV.style.display = '';
+    } else {
+      elCV.innerHTML = '';
+      elCV.style.display = 'none';
+    }
+
+    const elLL = g('s-ll-sel');
+    if (elLL) {
+      if (sel.length && limitLoss != null) {
+        elLL.innerHTML = sel.map(n =>
+          `<span class="s-sel-item">${n}口：共 ▼ ${yi(n * limitLoss)}</span>`
+        ).join('');
+        elLL.style.display = '';
+      } else {
+        elLL.innerHTML = '';
+        elLL.style.display = 'none';
+      }
+    }
+  }
+
+  function render() {
+    const p = getP();
+    g('disp-idx').textContent = num(p.idx);
+
+    const cv       = p.idx * p.pv;               // contract value per lot
+    const limitLoss = p.idx * p.ld * p.pv;        // loss per lot at limit-down
+    const maxOpen  = Math.floor(p.eq / p.im);
+    // Stress-safe: eq - n*st*pv >= n*mm  =>  n <= eq / (st*pv + mm)
+    const stressMax = Math.max(0, Math.floor(p.eq / (p.st * p.pv + p.mm)));
+
+    g('s-cv').textContent = wan(cv);
+    updateSel(cv, limitLoss);
+    g('s-ml').textContent = maxOpen + ' 口';
+    g('s-ll').textContent = '▼ ' + wan(limitLoss);
+    g('s-sm').textContent = stressMax + ' 口';
+
+    const tbody = g('tbody');
+    tbody.innerHTML = '';
+
+    for (let n = 1; n <= 50; n++) {
+      const marginUsed = n * p.im;
+      const canOpen    = marginUsed <= p.eq;
+      const lev        = (n * cv) / p.eq;
+      const marginPct  = marginUsed / p.eq * 100;
+      const avail      = p.eq - marginUsed;
+      const profit1k   = n * 100 * p.pv;
+
+      // Liq distance: (eq - n*mm) / (n*pv)
+      const liqDist = (p.eq - n * p.mm) / (n * p.pv);
+      const liqIdx  = p.idx - liqDist;
+
+      // Stress test remaining equity
+      const stressRem = p.eq - n * p.st * p.pv;
+      const stressOk  = stressRem >= n * p.mm;
+
+      // Classes
+      const levCls  = lev < 4 ? 'g' : lev < 8 ? 'a' : 'r';
+      const mPctCls = marginPct > 95 ? 'r' : marginPct > 75 ? 'a' : 'q';
+      const liqCls  = liqDist < p.st ? 'r' : liqDist < p.st * 1.5 ? 'a' : 'q';
+      let stressCls = 'c';
+      if (stressRem < 0) stressCls = 'r';
+      else if (!stressOk) stressCls = 'a';
+
+      const tr = document.createElement('tr');
+      if (!canOpen) {
+        tr.classList.add('closed');
+      } else {
+        if (n === maxOpen)   tr.classList.add('boundary-open');
+        if (n === stressMax) tr.classList.add('boundary-stress');
+        else if (n > stressMax) tr.classList.add('stress-zone');
+      }
+      if (pinnedRows.has(n)) tr.classList.add('pinned');
+      tr.addEventListener('click', () => {
+        if (pinnedRows.has(n)) { pinnedRows.delete(n); tr.classList.remove('pinned'); }
+        else                   { pinnedRows.add(n);    tr.classList.add('pinned');    }
+        updateSel(cv, limitLoss);
+      });
+
+      const liqCell    = canOpen
+        ? `<span class="${liqCls}">${num(liqDist, 0)} pt</span>`
+        : '<span class="q">—</span>';
+
+      const liqIdxCell = canOpen
+        ? `<span class="${liqCls}">${num(liqIdx, 0)}</span>`
+        : '<span class="q">—</span>';
+
+      const stressCell = stressRem >= 0
+        ? `<span class="${stressCls}">${wan(stressRem)}</span>`
+        : '<span class="g">爆倉</span>';
+
+      tr.innerHTML = `
+        <td>${n}</td>
+        <td class="${levCls}">${num(lev, 2)}x</td>
+        <td class="${mPctCls}">${num(marginPct, 1)}%</td>
+        <td class="d">${wan(avail)}</td>
+        <td class="r">+${wan(profit1k)}</td>
+        <td>${liqCell}</td>
+        <td>${liqIdxCell}</td>
+        <td>${stressCell}</td>
+      `;
+      tbody.appendChild(tr);
+    }
+  }
+
+  // ── TAIFEX margin data (核對日期 2026-07-02，來源截圖確認)
+  const MODES = {
+    tx:  { pv: 200, im: 63.6,  mm: 48.8  },   // 臺股期貨：原始 636,000 / 維持 488,000
+    mtx: { pv: 50,  im: 15.9,  mm: 12.2  },   // 小型臺指：原始 159,000 / 維持 122,000
+    mxf: { pv: 10,  im: 3.18,  mm: 2.44  },   // 微型臺指：原始  31,800 / 維持  24,400
+  };
+
+  function setStatus(type, text) {
+    g('ds-dot').className    = 'ds-dot ' + type;
+    g('ds-text').textContent = text;
+    g('ds-retry').style.display = type === 'stored' ? 'inline' : 'none';
+  }
+
+  function applyActiveMode() {
+    const mode = document.querySelector('.mode-tab.active').dataset.mode;
+    const m = MODES[mode];
+    g('v-pv').value = m.pv;
+    g('v-im').value = m.im;
+    g('v-mm').value = m.mm;
+  }
+
+  // ── 嘗試從 TAIFEX 抓最新保證金
+  async function fetchTaifexMargins() {
+    try {
+      const res = await fetch('https://www.taifex.com.tw/cht/5/indexMarging', {
+        mode: 'cors', cache: 'no-cache'
+      });
+      if (!res.ok) return null;
+      const html = await res.text();
+      return parseMargins(html);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function parseMargins(html) {
+    const doc  = new DOMParser().parseFromString(html, 'text/html');
+    const rows = [...doc.querySelectorAll('table tr')];
+    const found = {};
+
+    for (const row of rows) {
+      const cells = [...row.querySelectorAll('td')].map(td => td.textContent.trim());
+      if (cells.length < 4) continue;
+      const name = cells[0];
+      // 欄位順序: 商品別 | 結算保證金 | 維持保證金 | 原始保證金
+      const mm = parseFloat(cells[2].replace(/,/g, ''));
+      const im = parseFloat(cells[3].replace(/,/g, ''));
+      if (!mm || !im || isNaN(mm) || isNaN(im)) continue;
+
+      if (/臺股期貨|台股期貨/.test(name) && !/小型|微型|客製/.test(name)) {
+        found.tx  = { im: +(im / 10000).toFixed(4), mm: +(mm / 10000).toFixed(4) };
+      } else if (/小型臺指|小型台指/.test(name) && !/客製/.test(name)) {
+        found.mtx = { im: +(im / 10000).toFixed(4), mm: +(mm / 10000).toFixed(4) };
+      } else if (/微型臺指|微型台指/.test(name)) {
+        found.mxf = { im: +(im / 10000).toFixed(4), mm: +(mm / 10000).toFixed(4) };
+      }
+    }
+    return Object.keys(found).length === 3 ? found : null;
+  }
+
+  async function init() {
+    setStatus('', '保證金資料載入中…');
+    const live = await fetchTaifexMargins();
+    if (live) {
+      Object.keys(live).forEach(key => {
+        if (MODES[key]) {
+          MODES[key].im = live[key].im;
+          MODES[key].mm = live[key].mm;
+        }
+      });
+      const today = new Date().toISOString().slice(0, 10);
+      setStatus('live', '✓ 保證金已自動更新 · ' + today);
+    } else {
+      setStatus('stored', '⚠ 保證金數字無法自動取得，目前顯示 2026-07-02 版本，請點右側連結確認是否有異動');
+    }
+    applyActiveMode();
+    render();
+  }
+
+  function toggleHist() {
+    g('hist-overlay').classList.toggle('hidden');
+  }
+  function closeHist() {
+    g('hist-overlay').classList.add('hidden');
+  }
+  function closeHistOutside(e) {
+    if (e.target === g('hist-overlay')) closeHist();
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeHist();
+  });
+
+  document.querySelectorAll('.mode-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.mode-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyActiveMode();
+      render();
+    });
+  });
+
+  init();
+</script>
