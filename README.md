@@ -1,13 +1,13 @@
 # 嘟嘟台指期槓桿計算機
 
-[![GitHub Pages](https://img.shields.io/badge/Live-GitHub%20Pages-2C4A78?style=flat-square&logo=github)](https://zelda3121.github.io/dudu-futures/)
-[![Version](https://img.shields.io/badge/version-v3.1.2-C9880C?style=flat-square)](https://zelda3121.github.io/dudu-futures/)
+[![Demo](https://img.shields.io/badge/🚀%20立即使用-hilarious--narwhal--c43429.netlify.app-2C6B2F?style=flat-square)](https://hilarious-narwhal-c43429.netlify.app/)
+[![Version](https://img.shields.io/badge/version-v3.1.2-C9880C?style=flat-square)](https://hilarious-narwhal-c43429.netlify.app/)
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
-[![Visitors](https://hits.sh/zelda3121.github.io/dudu-futures.svg?style=flat-square&label=visitors&labelColor=192438&color=2C4A78)](https://zelda3121.github.io/dudu-futures/)
+[![Visitors](https://hits.sh/zelda3121.github.io/dudu-futures.svg?style=flat-square&label=visitors&labelColor=192438&color=2C4A78)](https://hilarious-narwhal-c43429.netlify.app/)
 
 > 台指期貨即時槓桿與風險計算工具，支援大台／小台／微台，適合個人交易者快速評估部位風險。
 
-**🔗 Live Demo：[zelda3121.github.io/dudu-futures](https://zelda3121.github.io/dudu-futures/)**
+**🔗 Live Demo：[hilarious-narwhal-c43429.netlify.app](https://hilarious-narwhal-c43429.netlify.app/)**
 
 ---
 
@@ -28,12 +28,6 @@
 
 ---
 
-## Screenshot
-
-![嘟嘟台指期槓桿計算機](https://zelda3121.github.io/dudu-futures/screenshot.png)
-
----
-
 ## Tech Stack
 
 ```
@@ -44,7 +38,7 @@
 - **Styling**：CSS Custom Properties + CSS Grid/Flexbox
 - **Storage**：localStorage (client-side only)
 - **Data**：TAIFEX 保證金頁面（CORS fetch，有 fallback）
-- **Hosting**：GitHub Pages
+- **Hosting**：Netlify (public) / GitHub Pages (source)
 - **Visit counter**：[hits.sh](https://hits.sh)
 - **Bundle size**：~40 KB（無任何 npm 套件）
 
