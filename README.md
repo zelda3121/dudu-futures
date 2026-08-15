@@ -1,7 +1,7 @@
 # 嘟嘟台指期槓桿計算機
 
 [![Demo](https://img.shields.io/badge/🚀%20立即使用-hilarious--narwhal--c43429.netlify.app-2C6B2F?style=flat-square)](https://hilarious-narwhal-c43429.netlify.app/)
-[![Version](https://img.shields.io/badge/version-v3.1.2-C9880C?style=flat-square)](https://hilarious-narwhal-c43429.netlify.app/)
+[![Version](https://img.shields.io/badge/version-v3.4.0-C9880C?style=flat-square)](https://hilarious-narwhal-c43429.netlify.app/)
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 [![Visitors](https://hits.sh/zelda3121.github.io/dudu-futures.svg?style=flat-square&label=visitors&labelColor=192438&color=2C4A78)](https://hilarious-narwhal-c43429.netlify.app/)
 
@@ -25,22 +25,21 @@
 | 💾 **設定自動保存** | localStorage 保存指數、權益、壓測幅度、選取口數 |
 | 🔄 **自動抓取保證金** | 嘗試從 TAIFEX 官網抓取最新保證金，失敗自動 fallback |
 | 📱 **合約切換** | 大台（200元/點）／小台（50元/點）／微台（10元/點） |
+| 💬 **仙門留言閣** | 以匿名仙俠道號留下改善建議或使用心得 |
+| 🧾 **版本歷程** | 在站內查看版本、日期與每次更新內容 |
+| ✦ **C 版天機推演** | 獨立修仙系統概念介面；靈石為 NTD 的 1:1 顯示代稱 |
 
 ---
 
 ## Tech Stack
 
-```
-純前端，零依賴，單一 HTML 檔案即可運行
-```
-
 - **Runtime**：Vanilla JS (ES2020+)
 - **Styling**：CSS Custom Properties + CSS Grid/Flexbox
-- **Storage**：localStorage (client-side only)
+- **Storage**：localStorage（試算設定）+ Netlify Blobs（公開留言）
+- **API**：Netlify Functions（留言讀取、提交、匿名道號與頻率限制）
 - **Data**：TAIFEX 保證金頁面（CORS fetch，有 fallback）
-- **Hosting**：Netlify (public) / GitHub Pages (source)
+- **Hosting**：Netlify
 - **Visit counter**：[hits.sh](https://hits.sh)
-- **Bundle size**：~40 KB（無任何 npm 套件）
 
 ---
 
@@ -48,7 +47,7 @@
 
 ```
 index.html
-├── <style>          # CSS variables (dark premium theme)
+├── <style>          # A／B 既有樣式與 C 版相容層
 ├── #app             # Full-page flex layout
 │   ├── .hdr         # Header (tool name + live index)
 │   ├── .mode-bar    # Contract type switcher (大台/小台/微台)
@@ -65,7 +64,16 @@ index.html
     ├── render()     # Main render loop (1–100 lots)
     ├── localStorage # saveSettings() / loadSettings()
     ├── TAIFEX fetch # fetchTaifexMargins() + parseMargins()
+    ├── Feedback UI # 留言抽屜、本機預覽與安全文字渲染
     └── init()       # Boot sequence
+styles/
+└── xianxia-v3.4.css # C 版天機法器設計系統、元件與動效
+assets/
+├── cultivation-bg-v1.png # 仙山、天門與白衣修士主景
+└── xianxia-v3.4/          # 書法、陣印、金玉框線與分隔素材
+netlify/
+├── functions/comments.mjs # 留言 API、頻率限制與儲存
+└── lib/feedback.mjs       # 匿名道號與文字清理
 ```
 
 ---
@@ -77,22 +85,26 @@ index.html
 git clone https://github.com/zelda3121/dudu-futures.git
 cd dudu-futures
 
-# Open directly in browser — no build step required
-open index.html
+# Install and build
+pnpm install
+pnpm build
+
+# Static preview (留言使用本機預覽資料)
+python3 -m http.server 4173
 ```
+
+根網址預設開啟 C 版；需要查看舊版時可使用 `?variant=a`，B 版則使用 `?variant=b`。
 
 ---
 
 ## Deployment
 
 ```bash
-# Update and push to GitHub Pages
-git add index.html
+# Push to the Netlify-connected repository
+git add .
 git commit -m "vX.Y.Z: description"
 git push origin main
 ```
-
-GitHub Pages 設定：**Settings → Pages → Branch: main / (root)**
 
 ---
 
@@ -100,6 +112,13 @@ GitHub Pages 設定：**Settings → Pages → Branch: main / (root)**
 
 | 版本 | 日期 | 主要變更 |
 |------|------|----------|
+| v3.4.0 | 2026-08-14 | C 版重構為天機陣盤骨架，導入書法主標、天機陣印與金玉雲霧 UI 素材 |
+| v3.3.1 | 2026-08-14 | C 版加入水墨仙境背景、頁首靈石計價告示、金色傳音按鈕與靈晶天機點位 |
+| v3.3.0 | 2026-08-14 | 新增獨立 C 版天機風險推演介面，導入深墨玉、鎏金、雲霧與靈石語彙 |
+| v3.2.2 | 2026-08-14 | 依 TWSE 官方資料重算歷史最大單日收盤跌點 Top 10 |
+| v3.2.1 | 2026-08-14 | 強化仙門留言入口，匿名道號改為出身地＋靈根＋修行身分 |
+| v3.2.0 | 2026-08-14 | 新增仙門留言閣、匿名道號、留言安全限制與正式版本歷程 |
+| v3.1.3 | 2026-08-12 | 更新大台／小台／微台初始與維持保證金（8/12 日盤收盤後生效） |
 | v3.1.2 | 2026-07-07 | 表格上限從 50 口擴展至 100 口 |
 | v3.1.1 | 2026-07-07 | 訪客計數改用 hits.sh badge |
 | v3.1.0 | 2026-07-07 | 決策摘要區、保守/標準/積極風控建議、壓測快捷按鈕、localStorage、readNumber 防呆 |

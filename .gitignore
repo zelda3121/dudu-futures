@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.netlify/
+.DS_Store
+artifacts/
+codex_xianxia_v3.4_handoff/
+codex_xianxia_v3.4_round2_precision_fix/
+codex_xianxia_v3.4_round3_final_match/
+preview.html
