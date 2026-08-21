@@ -325,7 +325,7 @@
     background: rgba(201,136,12,.12);
     color: #D4A030;
     font-size: 10px; font-weight: 800; font-style: normal;
-    cursor: default; margin-left: 6px; vertical-align: middle;
+    cursor: pointer; margin-left: 6px; vertical-align: middle;
     position: relative; flex-shrink: 0; line-height: 1;
   }
   .tip::after {
@@ -354,6 +354,59 @@
     border-color: rgba(84,150,248,.55);
     background: rgba(84,150,248,.1);
     color: var(--acc);
+  }
+  .action-help-group {
+    position: relative;
+    display: inline-flex;
+    min-width: 0;
+  }
+  .action-help-group > .b-action { width: 100%; }
+  .action-help-group > .b-action.has-help { padding-right: 29px; }
+  .action-help-group > .action-tip {
+    position: absolute;
+    z-index: 6;
+    top: 50%;
+    right: 7px;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    transform: translateY(-50%);
+  }
+  .help-link {
+    width: auto;
+    height: auto;
+    min-height: 20px;
+    margin: 0;
+    padding: 2px 6px;
+    border-radius: 999px;
+    font-size: 9px;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+  .summ { position: relative; }
+  .summ-help {
+    position: absolute;
+    z-index: 8;
+    top: 5px;
+    right: 22px;
+  }
+  .validation-status {
+    display: none;
+    flex: 1 0 100%;
+    color: var(--red);
+    font-size: 10px;
+    line-height: 1.45;
+  }
+  .validation-status.visible { display: block; }
+  .p:has(.p-in[aria-invalid="true"]) {
+    border-color: rgba(240,84,84,.72) !important;
+    box-shadow: inset 0 0 0 1px rgba(240,84,84,.16) !important;
+  }
+  .validation-row td {
+    height: 86px;
+    color: var(--red) !important;
+    text-align: center;
+    opacity: 1 !important;
   }
 
   /* ── HISTORY BUTTON ── */
@@ -920,6 +973,140 @@
     border-color: rgba(201,165,104,.5);
     color: #D5B77D;
     background: rgba(201,165,104,.07);
+  }
+  html[data-variant="b"] .variant-switch-action:focus-visible {
+    outline: 2px solid rgba(201,165,104,.72);
+    outline-offset: 2px;
+  }
+  html[data-variant="b"] .tip::before,
+  html[data-variant="b"] .tip::after { display: none !important; }
+  html[data-variant="b"] .tip:hover,
+  html[data-variant="b"] .tip:focus-visible,
+  html[data-variant="b"] .tip.is-open {
+    border-color: rgba(201,165,104,.72);
+    color: #E1C487;
+    background: #191713;
+  }
+  html[data-variant="b"] .help-popover {
+    --help-arrow-left: 50%;
+    position: fixed;
+    z-index: 3500;
+    width: max-content;
+    max-width: min(420px, calc(100vw - 24px));
+    padding: 11px 13px;
+    border: 1px solid #3B3E43;
+    border-radius: 9px;
+    color: #D9D9D5;
+    background: rgba(18,20,23,.98);
+    box-shadow: 0 16px 42px rgba(0,0,0,.48);
+    font-size: 11px;
+    line-height: 1.65;
+    pointer-events: none;
+    text-align: left;
+  }
+  html[data-variant="b"] .help-popover.hidden { display: none; }
+  .help-popover-title {
+    display: block;
+    margin-bottom: 5px;
+    color: #E4C98E;
+    font-size: 11.5px;
+    letter-spacing: .03em;
+  }
+  .help-popover-body { display: block; white-space: pre-line; }
+  html[data-variant="b"] .help-popover.has-glossary {
+    width: min(640px, calc(100vw - 24px));
+    max-width: min(640px, calc(100vw - 24px));
+    max-height: calc(100vh - 24px);
+    max-height: calc(100dvh - 24px);
+    padding: 14px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    pointer-events: auto;
+  }
+  .help-glossary-list {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    counter-reset: glossary-item;
+  }
+  .help-glossary-item {
+    display: grid;
+    grid-template-columns: minmax(164px, .95fr) minmax(0, 2.05fr);
+    gap: 12px;
+    align-items: start;
+    padding: 8px 10px;
+    border: 1px solid rgba(201,165,104,.16);
+    border-radius: 6px;
+    background: rgba(201,165,104,.045);
+    counter-increment: glossary-item;
+  }
+  .help-glossary-item dt {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr);
+    column-gap: 7px;
+    align-items: start;
+    color: #E4C98E;
+    font-weight: 780;
+    line-height: 1.5;
+  }
+  .help-glossary-item dt::before {
+    content: counter(glossary-item, decimal-leading-zero);
+    grid-row: 1 / span 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    min-height: 22px;
+    border: 1px solid rgba(201,165,104,.32);
+    border-radius: 50%;
+    color: #C9A568;
+    font: 700 8px/1 var(--mono);
+    letter-spacing: 0;
+  }
+  .help-glossary-term { min-width: 0; }
+  .help-glossary-alias {
+    display: block;
+    margin-top: 1px;
+    color: #99ACA7;
+    font-size: .78em;
+    font-weight: 620;
+    letter-spacing: .02em;
+  }
+  .help-glossary-item dd {
+    min-width: 0;
+    margin: 0;
+    color: #D5D8D5;
+    line-height: 1.55;
+  }
+  .help-glossary-formula {
+    display: block;
+    margin-top: 2px;
+    color: #AEB8B5;
+    font-family: var(--mono);
+    font-size: .92em;
+  }
+  .help-glossary-note {
+    margin: 9px 2px 0;
+    padding-top: 8px;
+    border-top: 1px solid rgba(201,165,104,.18);
+    color: #AEB5B2;
+    line-height: 1.55;
+  }
+  .help-glossary-note strong { color: #E4C98E; }
+  .help-popover.has-glossary .help-popover-title {
+    margin-bottom: 10px;
+    font-size: 13px;
+  }
+  .table-glossary {
+    min-height: 26px;
+    padding: 4px 9px;
+  }
+  @media (max-width: 600px) {
+    .help-glossary-item {
+      grid-template-columns: 1fr;
+      gap: 2px;
+      padding: 7px 9px;
+    }
   }
   html[data-variant="b"] .b-action.feedback-primary {
     position: relative;
@@ -2255,7 +2442,8 @@
   }
 </style>
 
-<link rel="stylesheet" href="styles/xianxia-v3.4.css">
+<link rel="stylesheet" href="styles/xianxia-v3.4.css?v=3.4.0-glossary">
+<script src="scripts/risk-model.js"></script>
 
 <script>
   const requestedVariant = new URLSearchParams(window.location.search).get('variant');
@@ -2286,9 +2474,10 @@
     <div class="hdr-ticker" aria-label="天機點位 47,000 點">
       <span class="dot"></span>
       <span class="c-ticker-gem" aria-hidden="true"></span>
-      <span class="c-ticker-label">天機點位</span>
+      <span class="c-ticker-label">台指期點位</span>
       <span class="idx-val" id="disp-idx">47,000</span>
       <span class="c-ticker-unit">點</span>
+      <button class="tip ticker-help c-only" type="button" data-help-title="台指期推演點位" data-tip="本次風險推演使用的台指期貨價格／點位。若正在評估新部位，可填預計進場點位；若已有部位，可填目前台指期市場點位並搭配目前帳戶權益。例如 47,000 代表台指期 47,000 點。" aria-label="台指期推演點位說明" aria-expanded="false" aria-controls="help-popover">?</button>
     </div>
   </header>
 
@@ -2309,12 +2498,22 @@
       <img class="c-title-art c-only" src="assets/xianxia-v3.4/headline.webp" alt="" aria-hidden="true">
       <h1 class="c-title-calligraphy c-only" aria-label="先觀劫數，再問長生。"><span>先觀劫數，</span><span>再問長生。</span></h1>
       <div class="b-copy b-copy-default">先決定帳戶能承受多少，再決定市場值得做多少。</div>
-      <div class="c-hero-copy c-only">以靈石照見命數，以推演避開爆倉天劫。</div>
+      <div class="c-hero-copy c-only">以靈石照見倉位，推演重大虧損與代沖銷風險。</div>
     </div>
     <div class="b-actions">
-      <button class="b-action" id="b-advanced" type="button">進階參數</button>
-      <button class="b-action" id="b-history" type="button">歷史情境</button>
-      <button class="b-action feedback-primary" id="b-feedback" type="button" aria-haspopup="dialog" aria-controls="feedback-overlay"><span class="feedback-gem" aria-hidden="true">◇</span>仙門傳音<span class="b-action-new">NEW</span></button>
+      <button class="b-action variant-switch-action" id="variant-switch" type="button" title="僅切換介面風格，不影響計算結果與資料">修仙模式</button>
+      <span class="action-help-group">
+        <button class="b-action has-help" id="b-advanced" type="button">進階參數</button>
+        <button class="tip action-tip" type="button" data-help-title="進階參數" data-tip="展開台指期契約的進階設定，例如每點價值、原始保證金、維持保證金與壓力測試參數。一般使用者可直接使用系統取得的 TAIFEX 預設資料，不需要手動修改。" aria-label="進階參數說明" aria-expanded="false" aria-controls="help-popover">?</button>
+      </span>
+      <span class="action-help-group">
+        <button class="b-action has-help" id="b-history" type="button">歷史情境</button>
+        <button class="tip action-tip" type="button" data-help-title="歷史大跌情境" data-tip="查看臺灣證券交易所加權指數的歷史重大單日收盤下跌紀錄，作為壓力測試參考。這不是台指期歷史跌點排行；歷史事件不代表未來一定重演，現貨指數與台指期實際波動也可能不同。" aria-label="歷史大跌情境說明" aria-expanded="false" aria-controls="help-popover">?</button>
+      </span>
+      <span class="action-help-group">
+        <button class="b-action feedback-primary has-help" id="b-feedback" type="button" aria-haspopup="dialog" aria-controls="feedback-overlay"><span class="feedback-gem" aria-hidden="true">◇</span>仙門傳音<span class="b-action-new">NEW</span></button>
+        <button class="tip action-tip" type="button" data-help-title="意見回饋" data-tip="提供功能建議、問題回報或使用心得。請勿留下姓名、電話或帳戶資料。" aria-label="仙門傳音說明" aria-expanded="false" aria-controls="help-popover">?</button>
+      </span>
     </div>
     <aside class="c-currency-notice c-only" aria-label="靈石計價說明">
       <span class="c-notice-seal">靈石計價</span>
@@ -2330,63 +2529,63 @@
     <div class="mode-tabs">
       <button class="mode-tab active" data-mode="tx">大台 <sub>200元/點</sub></button>
       <button class="mode-tab" data-mode="mtx">小台 <sub>50元/點</sub></button>
-      <button class="mode-tab" data-mode="mxf">微台 <sub>10元/點</sub></button>
+      <button class="mode-tab" data-mode="tmf">微台 <sub>10元/點</sub></button>
     </div>
   </div>
 
   <div class="params">
     <div class="p primary">
-      <div class="p-lbl">當前指數 <span class="p-badge">主要輸入</span><button class="tip" type="button" data-tip="你打算買入或賣出台指期的指數點位。下單前在看盤軟體或券商 App 查看目前大盤的加權指數，填入那個數字即可" aria-label="當前天機點位說明" aria-expanded="false">?</button></div>
+      <div class="p-lbl">台指期推演點位 <span class="p-badge">主要輸入</span><button class="tip" type="button" data-help-title="台指期推演點位" data-tip="本次風險推演使用的台指期貨價格／點位。評估新部位時可填預計進場點位；已有部位時可填目前台指期市場點位並搭配目前帳戶權益。例如 47,000 代表台指期 47,000 點。" aria-label="台指期推演點位說明" aria-expanded="false" aria-controls="help-popover">?</button></div>
       <div class="p-row">
-        <input class="p-in" id="v-idx" type="number" value="47000" min="1" title="當前市場指數點位" oninput="render()">
+        <input class="p-in" id="v-idx" type="number" value="47000" step="any" title="台指期推演點位" oninput="render()">
         <span class="p-unit">點</span>
       </div>
     </div>
     <div class="p primary">
-      <div class="p-lbl">帳戶權益 <span class="p-badge">主要輸入</span><button class="tip" type="button" data-tip="期貨帳戶裡實際的資金。打開期貨看盤軟體，找「權益數」那個數字填進來（單位：萬元）" aria-label="靈石庫存說明" aria-expanded="false">?</button></div>
+      <div class="p-lbl">帳戶權益 <span class="p-badge">主要輸入</span><button class="tip" type="button" data-help-title="期貨帳戶權益" data-tip="期貨保證金帳戶目前的帳戶權益。本介面以「靈石」作為新臺幣代稱：1 靈石＝NT$1。請填期貨帳戶權益，不是股票市值、房產或全部個人資產。" aria-label="期貨帳戶權益說明" aria-expanded="false" aria-controls="help-popover">?</button></div>
       <div class="p-row">
-        <input class="p-in" id="v-eq" type="number" value="2000" min="1" step="100" title="帳戶總權益（萬元）" oninput="render()">
+        <input class="p-in" id="v-eq" type="number" value="2000" step="any" title="期貨帳戶權益（萬元）" oninput="render()">
         <span class="p-unit">萬</span>
       </div>
     </div>
     <div class="p">
-      <div class="p-lbl">初始保證金 /口<button class="tip" type="button" data-tip="開新部位時每口需凍結的資金。帳戶餘額不足一口初始保證金，就無法再加碼。切換合約類型時會自動帶入 TAIFEX 最新數值" aria-label="開陣靈石說明" aria-expanded="false">?</button></div>
+      <div class="p-lbl">原始保證金 /口<button class="tip" type="button" data-help-title="每口原始保證金" data-tip="建立新部位時，每口契約至少需要的原始保證金。本工具優先讀取 TAIFEX 公告數值；期貨商可能另外加收，因此實際所需金額可能較高。" aria-label="每口原始保證金說明" aria-expanded="false" aria-controls="help-popover">?</button></div>
       <div class="p-row">
-        <input class="p-in" id="v-im" type="number" value="70.1" min="0.1" step="0.1" title="每口合約初始保證金（萬元）" oninput="render()">
+        <input class="p-in" id="v-im" type="number" value="70.1" step="any" title="每口合約原始保證金（萬元）" oninput="markContractFieldsDirty(); render()">
         <span class="p-unit">萬</span>
       </div>
     </div>
     <div class="p">
-      <div class="p-lbl">維持保證金 /口<button class="tip" type="button" data-tip="持倉中每口需維持的最低金額。帳戶跌破後，期貨商會追繳保證金，未補足則強制平倉（即爆倉）" aria-label="護陣靈石說明" aria-expanded="false">?</button></div>
+      <div class="p-lbl">維持保證金 /口<button class="tip" type="button" data-help-title="每口維持保證金" data-tip="模型用來估算持倉需維持的最低保證金。實際保證金通知、盤中風控、加收保證金與代沖銷條件，仍依使用者所屬期貨商規定。" aria-label="每口維持保證金說明" aria-expanded="false" aria-controls="help-popover">?</button></div>
       <div class="p-row">
-        <input class="p-in" id="v-mm" type="number" value="53.8" min="0.1" step="0.1" title="每口合約維持保證金（萬元）" oninput="render()">
+        <input class="p-in" id="v-mm" type="number" value="53.8" step="any" title="每口合約維持保證金（萬元）" oninput="markContractFieldsDirty(); render()">
         <span class="p-unit">萬</span>
       </div>
     </div>
     <div class="p">
-      <div class="p-lbl">每點價值<button class="tip" type="button" data-tip="指數每跳動 1 點，帳戶損益變動的金額。切換大台／小台／微台時會自動帶入正確數值" aria-label="每點靈石變化說明" aria-expanded="false">?</button></div>
+      <div class="p-lbl">每點價值<button class="tip" type="button" data-help-title="契約每點價值" data-tip="指數每變動 1 點，每口契約的損益金額。依 TAIFEX 契約規格：TX 大台 NT$200、MTX 小台 NT$50、TMF 微台 NT$10。" aria-label="契約每點價值說明" aria-expanded="false" aria-controls="help-popover">?</button></div>
       <div class="p-row">
-        <input class="p-in" id="v-pv" type="number" value="200" min="1" title="每點報酬（元），大台=200、小台=50、微台=10" oninput="render()">
+        <input class="p-in" id="v-pv" type="number" value="200" step="any" title="每點損益（元），大台=200、小台=50、微台=10" oninput="markContractFieldsDirty(); render()">
         <span class="p-unit">元/點</span>
       </div>
     </div>
     <div class="p coffee">
-      <div class="p-lbl">壓力測試跌幅<button class="tip" type="button" data-tip="自訂壓測情境：假設指數突然下跌這麼多點，右側表格「壓測後損失資金」欄會顯示各口數的損失金額及是否爆倉" aria-label="天劫推演跌幅說明" aria-expanded="false">?</button><button class="hist-btn" onclick="toggleHist()">歷史大跌排行</button></div>
+      <div class="p-lbl">下跌壓力測試<button class="tip" type="button" data-help-title="下跌壓力測試" data-tip="假設台指期由目前推演點位下跌指定點數，估算多單部位的損失與維持保證金壓力。例如輸入 2,000，代表模擬下跌 2,000 點。目前模型以「多單遭遇下跌」為主要情境。" aria-label="下跌壓力測試說明" aria-expanded="false" aria-controls="help-popover">?</button><button class="hist-btn" onclick="toggleHist()">歷史大跌排行</button></div>
       <div class="p-row">
-        <input class="p-in" id="v-st" type="number" value="2000" min="1" title="假設下跌點數" oninput="render()">
+        <input class="p-in" id="v-st" type="number" value="2000" step="any" title="多單下跌壓力測試點數" oninput="render()">
         <span class="p-unit">點</span>
       </div>
       <div class="stress-btns">
         <button class="stress-btn" onclick="setStress(1000)">-1,000</button>
         <button class="stress-btn" onclick="setStress(2000)">-2,000</button>
         <button class="stress-btn" onclick="setStress(3000)">-3,000</button>
-        <button class="stress-btn" onclick="setStressMax()">歷史最大</button>
+        <button class="stress-btn" onclick="setStressMax()">近年最大</button>
       </div>
     </div>
     <div class="p">
-      <div class="p-lbl">每日跌停幅度<button class="tip" type="button" data-tip="期交所規定的每日最大跌幅。目前台指期為 10%，用於試算單日若觸及跌停的最大損失" aria-label="單日天劫上限說明" aria-expanded="false">?</button></div>
+      <div class="p-lbl">極端情境幅度<button class="tip" type="button" data-help-title="設定幅度之極端情境估算" data-tip="以目前輸入的台指期推演點位下跌所設定的百分比，估算每口逆向損失。這是壓力測試情境；交易所正式漲跌幅是以前一一般交易時段結算價為基準，因此本數字不等同實際跌停價格。" aria-label="極端情境幅度說明" aria-expanded="false" aria-controls="help-popover">?</button></div>
       <div class="p-row">
-        <input class="p-in" id="v-ld" type="number" value="10" min="1" max="50" title="每日最大跌幅（%）" oninput="render()">
+        <input class="p-in" id="v-ld" type="number" value="10" max="50" step="any" title="極端下跌情境幅度（%）" oninput="render()">
         <span class="p-unit">%</span>
       </div>
     </div>
@@ -2394,34 +2593,36 @@
 
   <div class="hint-bar">
     <span class="p-badge">主要輸入</span>
-    一般使用只需填入「當前指數」與「帳戶權益」這兩項，其餘欄位已自動套用 TAIFEX 標準保證金數值。
+    一般使用只需填入「台指期推演點位」與「帳戶權益」這兩項，其餘欄位已自動套用 TAIFEX 公告保證金數值。
     <div class="data-status" id="data-status">
       <span class="ds-dot" id="ds-dot"></span>
       <span class="ds-text" id="ds-text">保證金資料載入中…</span>
       <span class="ds-sep">·</span>
       <a class="ds-link" id="ds-link" href="https://www.taifex.com.tw/cht/5/indexMarging" target="_blank" rel="noopener noreferrer">來源：TAIFEX ↗</a>
+      <button class="tip help-link model-help" type="button" data-help-title="模型假設" data-tip="本推演以單一台指期多單遭遇下跌為主要情境。保證金採系統目前取得的 TAIFEX 資料；未計期貨商額外加收保證金、手續費、期交稅、滑價、盤中保證金調整與其他部位損益抵銷。維持保證金臨界點位及壓測後維持門檻口數均為靜態估算，實際交易、保證金通知與代沖銷規則以所屬期貨商為準。" aria-label="模型假設說明" aria-expanded="false" aria-controls="help-popover">模型假設 ⓘ</button>
       <button class="ds-retry" id="ds-retry" style="display:none" onclick="init()">↺ 重新抓取</button>
     </div>
+    <div class="validation-status" id="validation-status" role="status" aria-live="polite"></div>
   </div>
   </div>
 
   <div class="summ">
     <div class="s">
-      <div class="s-lbl">每口合約面值</div>
+      <div class="s-lbl">每口契約名目價值</div>
       <div class="s-val" id="s-cv">—</div>
       <div class="s-sel" id="s-sel" style="display:none"></div>
     </div>
     <div class="s">
-      <div class="s-lbl">最大可開口數</div>
+      <div class="s-lbl">理論最大口數</div>
       <div class="s-val" id="s-ml" style="color:var(--acc)">—</div>
     </div>
     <div class="s">
-      <div class="s-lbl">觸及跌停最大損失 /口</div>
+      <div class="s-lbl">設定幅度之逆向情境估算損失 /口</div>
       <div class="s-val" id="s-ll" style="color:var(--green)">—</div>
       <div class="s-sel" id="s-ll-sel" style="display:none;color:var(--green);border-top-color:rgba(52,217,120,.2)"></div>
     </div>
     <div class="s">
-      <div class="s-lbl">壓測下最多安全口數</div>
+      <div class="s-lbl">壓測後維持門檻口數</div>
       <div class="s-val" id="s-sm" style="color:var(--amber)">—</div>
     </div>
     <div class="s">
@@ -2436,6 +2637,7 @@
       <div class="s-lbl">積極上限 <span style="font-size:8px;opacity:.55">≤8x ≤70%</span></div>
       <div class="s-val" id="s-rm-a" style="color:var(--red)">—</div>
     </div>
+    <button class="tip help-link summ-help" type="button" data-help-title="摘要名詞與本站風險分級" data-tip="每口契約名目價值＝台指期點位 × 每點價值，不是實際支付本金。理論最大口數＝帳戶權益 ÷ 每口原始保證金，僅是靜態資金上限。設定幅度之逆向情境屬壓力測試，不等同正式跌停價。壓測後維持門檻口數，指情境發生後帳戶權益仍不低於目前維持保證金需求的最大口數；不代表實際交易安全。保守／標準／進取區間是本站自訂比較分級，不是 TAIFEX、金管會或期貨商的官方標準。" aria-label="摘要名詞與本站風險分級說明" aria-expanded="false" aria-controls="help-popover">ⓘ 本站風險分級</button>
   </div>
 
   <div class="decision-wrap">
@@ -2445,10 +2647,11 @@
   </section>
 
   <div class="b-tablebar b-only">
-    <div class="b-table-title"><span class="b-table-title-default">完整口數風險表</span><span class="c-table-title c-only">天機契約風險卷軸</span></div>
+    <div class="b-table-title"><span class="b-table-title-default">口數風險推演表</span><span class="c-table-title c-only">天機契約風險卷軸</span></div>
     <div class="b-table-meta">
       <span>點擊任一列即可查看該口數摘要</span>
       <span class="b-row-count">20 列視圖</span>
+      <button class="tip help-link table-glossary" type="button" data-help-title="風險表名詞說明" data-help-template="table-glossary-template" data-tip="逐項說明契約口數、槓桿倍數、維持保證金臨界值、壓力測試損失與資金欄位。" aria-label="開啟風險表名詞逐項說明" aria-haspopup="dialog" aria-expanded="false" aria-controls="help-popover">ⓘ 名詞說明</button>
     </div>
   </div>
 
@@ -2458,12 +2661,12 @@
         <tr>
           <th title="持有的合約口數">口數</th>
           <th title="合約總面值 ÷ 帳戶權益，倍數越高風險越大">槓桿倍數</th>
-          <th title="帳戶權益跌至維持保證金門檻前，還能承受幾點的跌幅">距追繳線(點)</th>
-          <th title="指數跌至此點位時，帳戶將觸發追繳保證金通知，期貨商可能啟動風控程序">追繳風險點位</th>
-          <th title="指數急跌「壓力測試跌幅」點數後，損失了多少資金。標示「爆倉」代表帳戶歸零，「需追繳」代表需補繳保證金" style="color:var(--green)">壓測後損失資金</th>
+          <th title="依目前權益與維持保證金，估算距離模型臨界值還有多少點">距維持保證金臨界值(點)</th>
+          <th title="帳戶權益約等於所需維持保證金時的估算點位；實際風控依期貨商規定">維持保證金臨界點位(估算)</th>
+          <th title="多單遭遇設定下跌情境時的估算損失；需追繳與代沖銷仍依期貨商規定" style="color:var(--green)">壓力測試情境損失</th>
           <th title="指數每變動 100 點，此口數部位的損益金額；多單上漲為獲利、下跌為虧損">每 100 點損益</th>
           <th title="已凍結保證金佔帳戶權益的比例">保證金使用率</th>
-          <th title="帳戶權益扣掉已凍結保證金後，還能再開倉的資金">剩餘可用資金</th>
+          <th title="帳戶權益扣除總原始保證金後的靜態餘額，不等同實際可出金金額">扣除原始保證金後餘額</th>
         </tr>
       </thead>
       <tbody id="tbody"></tbody>
@@ -2474,8 +2677,8 @@
     <div class="hist-panel">
       <div class="hist-head">
         <div>
-          <div class="hist-head-title">台股加權指數 歷史最大單日收盤跌點 Top 10</div>
-          <div class="hist-head-sub">依 TWSE 每日收盤漲跌點數排序 · 資料核對至 2026-08-14</div>
+          <div class="hist-head-title">台股加權指數 2024 年以來單日收盤跌點 Top 10</div>
+          <div class="hist-head-sub">依 TWSE 每日收盤漲跌點數排序 · 範圍 2024-01-01～2026-08-14</div>
         </div>
         <button class="hist-close" onclick="closeHist()">✕</button>
       </div>
@@ -2567,15 +2770,18 @@
         <div class="release-list">
           <article class="release-item">
             <span class="release-dot"></span>
-            <div class="release-meta"><span class="release-version">v3.4.0</span><time class="release-date" datetime="2026-08-14">2026-08-14</time></div>
-            <div class="release-title">C 版天機陣盤架構重構</div>
+            <div class="release-meta"><span class="release-version">v3.4.0</span><time class="release-date" datetime="2026-08-17">2026-08-17</time></div>
+            <div class="release-title">天機陣盤、金融模型與說明系統 QA</div>
             <ul class="release-notes">
               <li>桌面版重組為左側門派銘牌、仙境天門、左右題字、三項推演輸入與風險卷軸。</li>
               <li>加入白衣修士前景錨點、天門呼吸、霧氣漂移與 9 秒流金邊界。</li>
               <li>選定口數改為金框鎖定列與 8★ 標記；卷軸維持一次 20 階推演。</li>
-              <li>仙門傳音改為深青玉印式按鈕，並保留進階參數、歷代天劫與既有計算。</li>
+              <li>仙門傳音改為深青玉印式按鈕，並保留進階參數、近年天劫情境與既有計算。</li>
               <li>說明圖示支援滑鼠、觸控與鍵盤；天機點位膠囊明確標示「點」，避免與靈石計價混淆。</li>
               <li>前景修士改為隨頁面移動的透明圖層，移除寬螢幕接縫與捲動遮擋。</li>
+              <li>TX／MTX／TMF 共用單一可測試模型，補齊輸入驗證、極端數值與維持保證金臨界語意。</li>
+              <li>保證金改由同源服務核對 TAIFEX 公告；逾時時立即使用有日期的備援值，不阻塞首屏。</li>
+              <li>補齊模型假設、名詞與操作說明；自訂契約參數及選取狀態可跨 B／C 模式保存。</li>
             </ul>
           </article>
           <article class="release-item">
@@ -2603,7 +2809,7 @@
           <article class="release-item">
             <span class="release-dot"></span>
             <div class="release-meta"><span class="release-version">v3.2.2</span><time class="release-date" datetime="2026-08-14">2026-08-14</time></div>
-            <div class="release-title">歷史最大單日收盤跌點重算</div>
+            <div class="release-title">2024 年以來單日收盤跌點重算</div>
             <ul class="release-notes">
               <li>依 TWSE 官方每日收盤行情重新計算 Top 10。</li>
               <li>新增 2026 年 7 月 17、28、29 日等最新紀錄。</li>
@@ -2658,9 +2864,9 @@
   </div>
 
   <footer class="foot">
-    <div class="leg"><span class="leg-d" style="background:var(--green)"></span>低槓桿 &lt;4x</div>
-    <div class="leg"><span class="leg-d" style="background:var(--amber)"></span>中槓桿 4–8x</div>
-    <div class="leg"><span class="leg-d" style="background:var(--red)"></span>高槓桿 ≥8x</div>
+    <div class="leg"><span class="leg-d" style="background:var(--green)"></span>低風險 ≤4x 且 ≤30%</div>
+    <div class="leg"><span class="leg-d" style="background:var(--amber)"></span>中風險：其餘區間</div>
+    <div class="leg"><span class="leg-d" style="background:var(--red)"></span>高風險 &gt;8x 或 &gt;70%</div>
     <div class="leg" style="gap:7px">
       <span style="width:18px;height:7px;border-radius:2px;background:rgba(232,168,32,.3);flex-shrink:0;display:inline-block"></span>
       保證金上限列
@@ -2669,6 +2875,7 @@
       <span style="width:18px;height:7px;border-radius:2px;background:rgba(255,80,80,.2);flex-shrink:0;display:inline-block"></span>
       壓測危險區
     </div>
+    <button class="tip help-link legend-help" type="button" data-help-title="本站分級說明" data-tip="本站風險分級，非 TAIFEX 官方標準。低風險：槓桿不高於 4 倍且原始保證金使用率不高於 30%；高風險：槓桿高於 8 倍或使用率高於 70%；其餘為中風險。保證金上限列是依權益與原始保證金推算的理論上限。壓測危險區是在目前壓力情境下，估算權益可能低於維持保證金需求的區域。" aria-label="本站分級說明" aria-expanded="false" aria-controls="help-popover">ⓘ 分級說明</button>
     <img src="https://hits.sh/zelda3121.github.io/dudu-futures.svg?style=flat-square&label=%E8%A8%AA%E5%AE%A2&labelColor=192438&color=2C4A78" alt="訪客" style="height:16px;vertical-align:middle;margin-left:auto;opacity:.8">
     <button class="foot-link" id="footer-feedback" type="button">仙門留言</button>
     <button class="foot-link" id="footer-version" type="button">版本 v3.4.0</button>
@@ -2678,14 +2885,66 @@
 </div>
 
 <div class="help-popover hidden" id="help-popover" role="tooltip" aria-live="polite"></div>
+<template id="table-glossary-template">
+  <dl class="help-glossary-list">
+    <div class="help-glossary-item">
+      <dt><span class="help-glossary-term">契約口數</span></dt>
+      <dd>本次模擬持有的期貨契約數量。</dd>
+    </div>
+    <div class="help-glossary-item">
+      <dt><span class="help-glossary-term">槓桿倍數<span class="help-glossary-alias">修仙介面：靈壓倍數</span></span></dt>
+      <dd>部位名目價值相對於帳戶權益的倍數。<span class="help-glossary-formula">契約總名目價值 ÷ 帳戶權益</span></dd>
+    </div>
+    <div class="help-glossary-item">
+      <dt><span class="help-glossary-term">距維持保證金臨界值<span class="help-glossary-alias">修仙介面：距護陣臨界</span></span></dt>
+      <dd>依靜態模型估算，目前點位距維持保證金臨界點位還有多少點。</dd>
+    </div>
+    <div class="help-glossary-item">
+      <dt><span class="help-glossary-term">維持保證金臨界點位<span class="help-glossary-alias">修仙介面：護陣臨界點位</span></span></dt>
+      <dd>帳戶權益約等於所需維持保證金時的估算點位；不等同期貨商實際通知或代沖銷點。</dd>
+    </div>
+    <div class="help-glossary-item">
+      <dt><span class="help-glossary-term">壓力測試情境損失<span class="help-glossary-alias">修仙介面：天劫推演損失</span></span></dt>
+      <dd>設定下跌情境下，多單部位的估算損失。<span class="help-glossary-formula">口數 × 壓測跌點 × 每點價值</span></dd>
+    </div>
+    <div class="help-glossary-item">
+      <dt><span class="help-glossary-term">每 100 點損益<span class="help-glossary-alias">修仙介面：每 100 點靈石損益</span></span></dt>
+      <dd>指數每變動 100 點時，此口數部位的損益金額。<span class="help-glossary-formula">口數 × 每點價值 × 100</span></dd>
+    </div>
+    <div class="help-glossary-item">
+      <dt><span class="help-glossary-term">保證金使用率<span class="help-glossary-alias">修仙介面：靈石封印率</span></span></dt>
+      <dd>已占用的原始保證金占帳戶權益的比例。<span class="help-glossary-formula">總原始保證金 ÷ 帳戶權益</span></dd>
+    </div>
+    <div class="help-glossary-item">
+      <dt><span class="help-glossary-term">扣除原始保證金後餘額<span class="help-glossary-alias">修仙介面：剩餘可用靈石</span></span></dt>
+      <dd>帳戶權益扣除總原始保證金後的靜態餘額；不等同期貨商實際可出金金額。</dd>
+    </div>
+  </dl>
+  <p class="help-glossary-note"><strong>注意：</strong>以上皆為風險推演欄位。實際保證金通知、盤中風控與代沖銷規則，以所屬期貨商規定為準。</p>
+</template>
 
 <script>
   const APP_VERSION          = 'v3.4.0';
   const APP_VARIANT          = document.documentElement.dataset.variant || 'a';
   const CULTIVATION_MODE     = APP_VARIANT === 'c';
   const FALLBACK_MARGIN_DATE = '2026-08-12';
+  const {
+    CONTRACT_SPECS,
+    validateRiskInputs,
+    calculateRiskSummary,
+    calculatePosition
+  } = globalThis.DuduRiskModel;
 
-  // TWSE FMTQIK 每日收盤資料，依單日收盤跌點絕對值排序；核對至 2026-08-14。
+  // Single source for contract multipliers and fallback margins. Live TAIFEX
+  // data may update im/mm, while point value always comes from the spec.
+  const MODES = Object.fromEntries(Object.entries(CONTRACT_SPECS).map(([key, spec]) => [key, {
+    symbol: spec.symbol,
+    pv: spec.pointValue,
+    im: spec.initialMargin / 10000,
+    mm: spec.maintenanceMargin / 10000
+  }]));
+
+  // TWSE FMTQIK 2024 年以來每日收盤資料，依單日收盤跌點絕對值排序；核對至 2026-08-14。
   const HIST_DROPS = [
     { date: '2026-07-17', event: '全球晶片股賣壓・權值股估值修正', points: 2953.71, pct: 6.47, close: 42671.27 },
     { date: '2025-04-07', event: '美國對等關稅・全球市場震盪',     points: 2065.87, pct: 9.70, close: 19232.35 },
@@ -2702,6 +2961,7 @@
   const g = id => document.getElementById(id);
 
   function wan(n) {
+    if (!Number.isFinite(n)) return '—';
     const sign = n < 0 ? '-' : '';
     const abs = Math.abs(n);
     return sign + (abs / 10000).toLocaleString('zh-TW', {
@@ -2711,6 +2971,7 @@
 
   // 億/萬 auto-switch: >= 1億 shows 億, else 萬
   function yi(n) {
+    if (!Number.isFinite(n)) return '—';
     const sign = n < 0 ? '-' : '';
     const abs = Math.abs(n);
     if (abs >= 100000000) {
@@ -2724,29 +2985,77 @@
   }
 
   function num(n, d) {
+    if (!Number.isFinite(n)) return '—';
     return n.toLocaleString('zh-TW', {
       minimumFractionDigits: d ?? 0, maximumFractionDigits: d ?? 0
     });
   }
 
-  function readNumber(id, fallback, min = 0) {
-    const v = Number(g(id).value);
-    if (!Number.isFinite(v) || v < min) return fallback;
-    return v;
+  function readNumber(id, scale = 1) {
+    const raw = g(id)?.value?.trim();
+    if (!raw) return Number.NaN;
+    const value = Number(raw);
+    return Number.isFinite(value) ? value * scale : Number.NaN;
   }
 
   function getP() {
     const activeMode = document.querySelector('.mode-tab.active')?.dataset.mode || 'tx';
     const mode = MODES[activeMode] || MODES.tx;
     return {
-      idx: readNumber('v-idx', 47000, 1),
-      eq:  readNumber('v-eq',  2000,  1) * 10000,
-      im:  readNumber('v-im',  mode.im,  0.1) * 10000,
-      mm:  readNumber('v-mm',  mode.mm,  0.1) * 10000,
-      pv:  readNumber('v-pv',  mode.pv,  1),
-      st:  readNumber('v-st',  2000,  1),
-      ld:  readNumber('v-ld',  10,    1) / 100,
+      idx: readNumber('v-idx'),
+      eq:  readNumber('v-eq', 10000),
+      im:  readNumber('v-im', 10000),
+      mm:  readNumber('v-mm', 10000),
+      pv:  readNumber('v-pv'),
+      st:  readNumber('v-st'),
+      ld:  readNumber('v-ld', 0.01),
+      mode
     };
+  }
+
+  function toModelParams(p) {
+    return {
+      indexPrice: p.idx,
+      equity: p.eq,
+      initialMargin: p.im,
+      maintenanceMargin: p.mm,
+      pointValue: p.pv,
+      stressPoints: p.st,
+      extremeRate: p.ld
+    };
+  }
+
+  const MODEL_FIELD_INPUTS = {
+    indexPrice: 'v-idx', equity: 'v-eq', initialMargin: 'v-im',
+    maintenanceMargin: 'v-mm', pointValue: 'v-pv',
+    stressPoints: 'v-st', extremeRate: 'v-ld'
+  };
+
+  function setValidationState(errors = []) {
+    Object.values(MODEL_FIELD_INPUTS).forEach(id => g(id)?.removeAttribute('aria-invalid'));
+    errors.forEach(error => {
+      const input = g(MODEL_FIELD_INPUTS[error.field]);
+      if (input) input.setAttribute('aria-invalid', 'true');
+    });
+    const status = g('validation-status');
+    if (!status) return;
+    status.textContent = errors.length ? `請修正：${errors.map(error => error.message).join('；')}` : '';
+    status.classList.toggle('visible', errors.length > 0);
+  }
+
+  function renderInvalid(errors, p) {
+    setValidationState(errors);
+    g('disp-idx').textContent = Number.isFinite(p.idx) && p.idx > 0 ? num(p.idx) : '—';
+    ['s-cv', 's-ml', 's-ll', 's-sm', 's-rm-c', 's-rm-s', 's-rm-a'].forEach(id => {
+      g(id).textContent = '—';
+    });
+    g('s-sel').style.display = 'none';
+    g('s-ll-sel').style.display = 'none';
+    g('decision-hint').style.display = '';
+    g('decision-grid').style.display = 'none';
+    g('tbody').innerHTML = `<tr class="validation-row"><td colspan="8">${errors[0]?.message || '請修正輸入後再進行風險推演'}</td></tr>`;
+    const rowCount = document.querySelector('.b-row-count');
+    if (rowCount) rowCount.textContent = CULTIVATION_MODE ? '待修正輸入' : '輸入無效';
   }
 
   const pinnedRows = new Set();
@@ -2770,8 +3079,8 @@
 
   // ── DECISION SUMMARY ──
   function getRiskLevel(lev, mPct) {
-    if (lev < 4 && mPct < 30)  return { cls: 'risk-low',  label: CULTIVATION_MODE ? '劫數尚輕' : '低風險' };
-    if (lev >= 8 || mPct >= 60) return { cls: 'risk-high', label: CULTIVATION_MODE ? '天劫臨身' : '高風險' };
+    if (lev <= 4 && mPct <= 30) return { cls: 'risk-low',  label: CULTIVATION_MODE ? '劫數尚輕' : '低風險' };
+    if (lev > 8 || mPct > 70)   return { cls: 'risk-high', label: CULTIVATION_MODE ? '天劫臨身' : '高風險' };
     return { cls: 'risk-mid', label: CULTIVATION_MODE ? '宜守道心' : '謹慎' };
   }
 
@@ -2785,20 +3094,24 @@
     }
     hint.style.display = 'none'; grid.style.display = '';
     const n = sel[0];
-    const lev      = (n * cv) / p.eq;
-    const mPct     = (n * p.im) / p.eq * 100;
-    const profit1k = n * 100 * p.pv;
-    const liqIdx   = p.idx - (p.eq - n * p.mm) / (n * p.pv);
-    const stressLoss = n * p.st * p.pv;
+    const metrics = calculatePosition(toModelParams(p), n);
+    if (!metrics.valid) {
+      hint.style.display = ''; grid.style.display = 'none'; return;
+    }
+    const lev = metrics.leverage;
+    const mPct = metrics.initialMarginUsagePct;
+    const profit1k = metrics.pnlPer100Points;
+    const liqIdx = metrics.maintenanceThresholdPrice;
+    const stressLoss = metrics.stressLoss;
     const risk  = getRiskLevel(lev, mPct);
-    const levCls = lev < 4 ? 'g' : lev < 8 ? 'a' : 'r';
-    const mCls   = mPct > 95 ? 'r' : mPct > 75 ? 'a' : 'q';
+    const levCls = lev <= 4 ? 'g' : lev <= 8 ? 'a' : 'r';
+    const mCls   = mPct > 70 ? 'r' : mPct > 30 ? 'a' : 'q';
     const terms = CULTIVATION_MODE ? {
       selected: '契約口數', leverage: '靈壓倍數', margin: '靈石封印率',
-      pnl: '每 100 點靈石變化', stress: '天劫推演損失', liquidation: '追繳劫線', risk: '劫數等級'
+      pnl: '每 100 點靈石變化', stress: '天劫推演損失', liquidation: '護陣臨界點（估算）', risk: '劫數等級'
     } : {
       selected: '選定口數', leverage: '槓桿倍數', margin: '保證金使用率',
-      pnl: '每 100 點損益', stress: '壓測後損失', liquidation: '追繳風險點位', risk: '風險等級'
+      pnl: '每 100 點損益', stress: '壓測後損失', liquidation: '維持保證金臨界點位', risk: '風險等級'
     };
     const extra  = sel.length > 1
       ? `<div style="font-size:9px;color:var(--txt3);margin-top:2px">+ ${sel.slice(1).join('、')} 口</div>` : '';
@@ -2809,6 +3122,10 @@
       const unit = splitAt >= 0 ? formatted.slice(splitAt + 1) : '';
       return `<span class="dc-number">${prefix}${amount}</span>${unit ? `<span class="dc-unit"> ${unit}</span>` : ''}`;
     };
+    const liquidationHelp = CULTIVATION_MODE
+      ? `<button class="tip dc-help" type="button" data-help-title="維持保證金臨界點位（估算）" data-tip="依目前帳戶權益、契約口數與維持保證金，估算台指期下跌至何種點位時，帳戶權益約等於所需維持保證金。這是靜態模型估算；實際通知、盤中風控、加收保證金與代沖銷條件仍依期貨商規定。" aria-label="維持保證金臨界點位說明" aria-expanded="false" aria-controls="help-popover">?</button>`
+      : '';
+    const liquidationDisplay = liqIdx > 0 ? num(liqIdx, 0) : '跌至 0 前未達';
     grid.innerHTML = `
       <div class="dc-cell dc-cell--selected"><div class="dc-lbl">${terms.selected}</div>
         <div class="dc-val" style="color:#C9A040;font-size:17px">${n} 口</div>${extra}</div>
@@ -2820,19 +3137,26 @@
         <div class="dc-val" style="color:var(--txt)">${decisionAmount(profit1k, '±')}</div></div>
       <div class="dc-cell dc-cell--stress"><div class="dc-lbl">${terms.stress}</div>
         <div class="dc-val g">${decisionAmount(stressLoss, '▼ ')}</div></div>
-      <div class="dc-cell dc-cell--liquidation"><div class="dc-lbl">${terms.liquidation}</div>
-        <div class="dc-val" style="color:var(--red)">${num(liqIdx, 0)}</div></div>
+      <div class="dc-cell dc-cell--liquidation"><div class="dc-lbl">${terms.liquidation}${liquidationHelp}</div>
+        <div class="dc-val${liqIdx > 0 ? '' : ' dc-na'}" style="color:var(--red)">${liquidationDisplay}</div></div>
       <div class="dc-cell dc-cell--risk"><div class="dc-lbl">${terms.risk}</div>
         <div style="margin-top:5px"><span class="risk-badge ${risk.cls}">${risk.label}</span></div></div>
     `;
   }
 
   // ── LOCALSTORAGE ──
-  const STORE_KEY = APP_VARIANT === 'b'
-    ? 'taifexLeverageCalc.settings.b'
-    : APP_VARIANT === 'c'
-      ? 'taifexLeverageCalc.settings.c'
-      : 'taifexLeverageCalc.settings.v1';
+  function settingsKeyForVariant(variant) {
+    if (variant === 'b') return 'taifexLeverageCalc.settings.b';
+    if (variant === 'c') return 'taifexLeverageCalc.settings.c';
+    return 'taifexLeverageCalc.settings.v1';
+  }
+
+  const STORE_KEY = settingsKeyForVariant(APP_VARIANT);
+  let contractFieldsCustomized = false;
+
+  function markContractFieldsDirty() {
+    contractFieldsCustomized = true;
+  }
 
   function saveSettings() {
     try {
@@ -2840,29 +3164,65 @@
         mode:   document.querySelector('.mode-tab.active').dataset.mode,
         idx:    g('v-idx').value,
         eq:     g('v-eq').value,
+        im:     g('v-im').value,
+        mm:     g('v-mm').value,
+        pv:     g('v-pv').value,
         st:     g('v-st').value,
         ld:     g('v-ld').value,
+        contractFieldsCustomized,
         pinned: [...pinnedRows]
       }));
     } catch(_) {}
   }
 
+  function switchVariant(variant) {
+    if (!['b', 'c'].includes(variant) || variant === APP_VARIANT) return;
+
+    // Persist the current screen and hand the same state to the target skin.
+    // B and C keep their existing storage keys; only an explicit switch syncs them.
+    saveSettings();
+    try {
+      const currentSettings = localStorage.getItem(STORE_KEY);
+      if (currentSettings) {
+        localStorage.setItem(settingsKeyForVariant(variant), currentSettings);
+      }
+    } catch(_) {}
+
+    const url = new URL(window.location.href);
+    url.searchParams.set('variant', variant);
+    window.location.href = url.toString();
+  }
+
   function loadSettings() {
     try {
       const raw = localStorage.getItem(STORE_KEY);
-      if (!raw) return;
+      if (!raw) return false;
       const s = JSON.parse(raw);
-      if (s.idx) g('v-idx').value = s.idx;
-      if (s.eq)  g('v-eq').value  = s.eq;
-      if (s.st)  g('v-st').value  = s.st;
-      if (s.ld)  g('v-ld').value  = s.ld;
-      if (s.mode) {
-        document.querySelectorAll('.mode-tab').forEach(b =>
-          b.classList.toggle('active', b.dataset.mode === s.mode)
-        );
+      for (const [key, id] of [['idx', 'v-idx'], ['eq', 'v-eq'], ['st', 'v-st'], ['ld', 'v-ld']]) {
+        if (Object.prototype.hasOwnProperty.call(s, key)) g(id).value = s[key];
       }
-      if (Array.isArray(s.pinned)) s.pinned.forEach(n => pinnedRows.add(+n));
-    } catch(_) {}
+      const migratedMode = s.mode === 'mxf' ? 'tmf' : s.mode;
+      const storedMode = MODES[migratedMode] ? migratedMode : 'tx';
+      document.querySelectorAll('.mode-tab').forEach(b =>
+        b.classList.toggle('active', b.dataset.mode === storedMode)
+      );
+
+      contractFieldsCustomized = s.contractFieldsCustomized === true;
+      if (contractFieldsCustomized) {
+        for (const [key, id] of [['im', 'v-im'], ['mm', 'v-mm'], ['pv', 'v-pv']]) {
+          if (Object.prototype.hasOwnProperty.call(s, key)) g(id).value = s[key];
+        }
+      }
+      if (Array.isArray(s.pinned)) {
+        s.pinned
+          .map(Number)
+          .filter(n => Number.isSafeInteger(n) && n > 0 && n <= 1000)
+          .forEach(n => pinnedRows.add(n));
+      }
+      return true;
+    } catch(_) {
+      return false;
+    }
   }
 
   function updateSel(cv, limitLoss) {
@@ -2895,14 +3255,30 @@
 
   function render() {
     const p = getP();
+    const modelParams = toModelParams(p);
+    const validation = validateRiskInputs(modelParams);
+    if (!validation.valid) {
+      currentP = null;
+      renderInvalid(validation.errors, p);
+      saveSettings();
+      return;
+    }
+    const summary = calculateRiskSummary(modelParams);
+    if (!summary.valid) {
+      currentP = null;
+      renderInvalid(summary.errors, p);
+      saveSettings();
+      return;
+    }
+    setValidationState();
     currentP = p;
     g('disp-idx').textContent = num(p.idx);
     document.querySelector('.hdr-ticker')?.setAttribute('aria-label', `天機點位 ${num(p.idx)} 點`);
 
-    const cv        = p.idx * p.pv;
-    const limitLoss = p.idx * p.ld * p.pv;
-    const maxOpen   = Math.floor(p.eq / p.im);
-    const stressMax = Math.max(0, Math.floor(p.eq / (p.st * p.pv + p.mm)));
+    const cv        = summary.notionalPerContract;
+    const limitLoss = summary.extremeScenarioLossPerContract;
+    const maxOpen   = summary.maximumContracts;
+    const stressMax = summary.stressSurvivableContracts;
     currentCv = cv; currentLimitLoss = limitLoss;
 
     g('s-cv').textContent = wan(cv);
@@ -2911,43 +3287,38 @@
     g('s-ll').textContent = '▼ ' + wan(limitLoss);
     g('s-sm').textContent = stressMax + ' 口';
 
-    // Risk mode recommendations
-    let rmC = 0, rmS = 0, rmA = 0;
-    for (let n = 1; n <= 100; n++) {
-      if (n * p.im > p.eq) break;
-      const lev  = (n * cv) / p.eq;
-      const mPct = (n * p.im) / p.eq * 100;
-      if (lev <= 4 && mPct <= 30) rmC = n;
-      if (lev <= 6 && mPct <= 50) rmS = n;
-      if (lev <= 8 && mPct <= 70) rmA = n;
-    }
+    // Site-defined comparison bands; not an official TAIFEX risk standard.
+    const rmC = summary.conservativeContracts;
+    const rmS = summary.standardContracts;
+    const rmA = summary.aggressiveContracts;
     g('s-rm-c').textContent = rmC > 0 ? rmC + ' 口' : '—';
     g('s-rm-s').textContent = rmS > 0 ? rmS + ' 口' : '—';
     g('s-rm-a').textContent = rmA > 0 ? rmA + ' 口' : '—';
 
     const tbody = g('tbody');
     tbody.innerHTML = '';
+    const highestPinned = Math.max(0, ...pinnedRows);
+    const requestedRows = Math.max(100, maxOpen + 5, stressMax + 5, highestPinned);
+    const rowLimit = Math.min(1000, requestedRows);
 
-    for (let n = 1; n <= 100; n++) {
-      const marginUsed = n * p.im;
-      const canOpen    = marginUsed <= p.eq;
-      const lev        = (n * cv) / p.eq;
-      const marginPct  = marginUsed / p.eq * 100;
-      const avail      = p.eq - marginUsed;
-      const profit1k   = n * 100 * p.pv;
-
-      // Liq distance: (eq - n*mm) / (n*pv)
-      const liqDist = (p.eq - n * p.mm) / (n * p.pv);
-      const liqIdx  = p.idx - liqDist;
-
-      // Stress test
-      const stressLoss = n * p.st * p.pv;
-      const stressRem  = p.eq - stressLoss;
-      const stressOk   = stressRem >= n * p.mm;
+    for (let n = 1; n <= rowLimit; n++) {
+      const metrics = calculatePosition(modelParams, n);
+      if (!metrics.valid) break;
+      const marginUsed = metrics.initialMarginUsed;
+      const canOpen    = metrics.canOpen;
+      const lev        = metrics.leverage;
+      const marginPct  = metrics.initialMarginUsagePct;
+      const avail      = metrics.availableBalance;
+      const profit1k   = metrics.pnlPer100Points;
+      const liqDist    = metrics.maintenanceDistancePoints;
+      const liqIdx     = metrics.maintenanceThresholdPrice;
+      const stressLoss = metrics.stressLoss;
+      const stressRem  = metrics.stressRemainingEquity;
+      const stressOk   = metrics.stressMeetsMaintenance;
 
       // Classes
-      const levCls  = lev < 4 ? 'g' : lev < 8 ? 'a' : 'r';
-      const mPctCls = marginPct > 95 ? 'r' : marginPct > 75 ? 'a' : 'q';
+      const levCls  = lev <= 4 ? 'g' : lev <= 8 ? 'a' : 'r';
+      const mPctCls = marginPct > 70 ? 'r' : marginPct > 30 ? 'a' : 'q';
       const liqCls  = liqDist < p.st ? 'r' : liqDist < p.st * 1.5 ? 'a' : 'q';
 
       const tr = document.createElement('tr');
@@ -2965,12 +3336,14 @@
         : '<span class="q">—</span>';
 
       const liqIdxCell = canOpen
-        ? `<span class="${liqCls}">${num(liqIdx, 0)}</span>`
+        ? (liqIdx > 0
+          ? `<span class="${liqCls}">${num(liqIdx, 0)}</span>`
+          : '<span class="q liq-na">跌至 0 前未達</span>')
         : '<span class="q">—</span>';
 
       let stressLabel = '';
-      if (stressRem < 0) stressLabel = ' <span class="r" style="font-size:9px;opacity:.85">爆倉</span>';
-      else if (!stressOk) stressLabel = ' <span class="a" style="font-size:9px;opacity:.85">需追繳</span>';
+      if (stressRem <= 0) stressLabel = ' <span class="r" style="font-size:9px;opacity:.85">權益耗盡</span>';
+      else if (!stressOk) stressLabel = ' <span class="a" style="font-size:9px;opacity:.85">低於維持</span>';
       const stressCell = `<span class="g">▼ ${wan(stressLoss)}</span>${stressLabel}`;
 
       tr.innerHTML = `
@@ -2993,16 +3366,17 @@
       tbody.appendChild(tr);
     }
 
+    const rowCount = document.querySelector('.b-row-count');
+    if (rowCount) {
+      const truncated = requestedRows > rowLimit;
+      rowCount.textContent = CULTIVATION_MODE
+        ? `${truncated ? `僅顯示 1–${rowLimit} 階 · 推算上限 ${maxOpen} 口` : `${rowLimit} 階資料`} · 20 階視窗`
+        : `${truncated ? `僅顯示 1–${rowLimit} 列 · 理論上限 ${maxOpen} 口` : `${rowLimit} 列資料`} · 20 列視窗`;
+    }
+
     updateDecisionSummary(p, cv);
     saveSettings();
   }
-
-  // ── TAIFEX margin data (公告 2026-08-11，2026-08-12 一般交易時段結束後生效)
-  const MODES = {
-    tx:  { pv: 200, im: 70.1,   mm: 53.8  },  // 臺股期貨：原始 701,000 / 維持 538,000
-    mtx: { pv: 50,  im: 17.525, mm: 13.45 },  // 小型臺指：原始 175,250 / 維持 134,500
-    mxf: { pv: 10,  im: 3.505,  mm: 2.69  },  // 微型臺指：原始  35,050 / 維持  26,900
-  };
 
   function setStatus(type, text) {
     g('ds-dot').className    = 'ds-dot ' + type;
@@ -3010,75 +3384,65 @@
     g('ds-retry').style.display = type === 'stored' ? 'inline' : 'none';
   }
 
-  function applyActiveMode() {
+  function applyActiveMode({ preserveCustom = false } = {}) {
     const mode = document.querySelector('.mode-tab.active').dataset.mode;
     const m = MODES[mode];
+    if (preserveCustom && contractFieldsCustomized) return;
     g('v-pv').value = m.pv;
     g('v-im').value = m.im;
     g('v-mm').value = m.mm;
+    contractFieldsCustomized = false;
   }
 
   // ── 嘗試從 TAIFEX 抓最新保證金
   async function fetchTaifexMargins() {
     try {
-      const res = await fetch('https://www.taifex.com.tw/cht/5/indexMarging', {
-        mode: 'cors', cache: 'no-cache'
+      const res = await fetch('/api/margins', {
+        cache: 'no-cache', signal: AbortSignal.timeout(7000)
       });
       if (!res.ok) return null;
-      const html = await res.text();
-      return parseMargins(html);
+      const payload = await res.json();
+      if (!payload?.contracts) return null;
+      const found = {};
+      for (const key of ['tx', 'mtx', 'tmf']) {
+        const row = payload.contracts[key];
+        if (!row || !Number.isFinite(row.initialMargin) || !Number.isFinite(row.maintenanceMargin)
+          || row.initialMargin <= 0 || row.maintenanceMargin <= 0
+          || row.initialMargin < row.maintenanceMargin) return null;
+        found[key] = {
+          im: row.initialMargin / 10000,
+          mm: row.maintenanceMargin / 10000
+        };
+      }
+      return { margins: found, updatedAt: payload.updatedAt || null };
     } catch (_) {
       return null;
     }
   }
 
-  function parseMargins(html) {
-    const doc  = new DOMParser().parseFromString(html, 'text/html');
-    const rows = [...doc.querySelectorAll('table tr')];
-    const found = {};
-
-    for (const row of rows) {
-      const cells = [...row.querySelectorAll('td')].map(td => td.textContent.trim());
-      if (cells.length < 4) continue;
-      const name = cells[0];
-      // 欄位順序: 商品別 | 結算保證金 | 維持保證金 | 原始保證金
-      const mm = parseFloat(cells[2].replace(/,/g, ''));
-      const im = parseFloat(cells[3].replace(/,/g, ''));
-      if (!mm || !im || isNaN(mm) || isNaN(im)) continue;
-
-      if (/臺股期貨|台股期貨/.test(name) && !/小型|微型|客製/.test(name)) {
-        found.tx  = { im: +(im / 10000).toFixed(4), mm: +(mm / 10000).toFixed(4) };
-      } else if (/小型臺指|小型台指/.test(name) && !/客製/.test(name)) {
-        found.mtx = { im: +(im / 10000).toFixed(4), mm: +(mm / 10000).toFixed(4) };
-      } else if (/微型臺指|微型台指/.test(name)) {
-        found.mxf = { im: +(im / 10000).toFixed(4), mm: +(mm / 10000).toFixed(4) };
-      }
-    }
-    return Object.keys(found).length === 3 ? found : null;
-  }
-
   async function init() {
-    loadSettings();
-    if (['b', 'c'].includes(APP_VARIANT) && pinnedRows.size === 0) {
+    const hadStoredSettings = loadSettings();
+    if (['b', 'c'].includes(APP_VARIANT) && !hadStoredSettings && pinnedRows.size === 0) {
       pinnedRows.add(8);
     }
     renderHistTable();
     setStatus('', '保證金資料載入中…');
+    applyActiveMode({ preserveCustom: true });
+    render();
     const live = await fetchTaifexMargins();
     if (live) {
-      Object.keys(live).forEach(key => {
+      Object.keys(live.margins).forEach(key => {
         if (MODES[key]) {
-          MODES[key].im = live[key].im;
-          MODES[key].mm = live[key].mm;
+          MODES[key].im = live.margins[key].im;
+          MODES[key].mm = live.margins[key].mm;
         }
       });
-      const today = new Date().toISOString().slice(0, 10);
-      setStatus('live', '✓ 保證金已自動更新 · ' + today);
+      setStatus('live', `✓ TAIFEX 保證金已核對 · ${live.updatedAt || new Date().toISOString().slice(0, 10)}`);
+      applyActiveMode({ preserveCustom: true });
+      render();
     } else {
       setStatus('stored', `⚠ 保證金數字無法自動取得，目前顯示 ${FALLBACK_MARGIN_DATE} 日盤收盤後生效版本，請點右側連結確認是否有異動`);
     }
-    applyActiveMode();
-    render();
   }
 
   function toggleHist() {
@@ -3343,26 +3707,26 @@
     document.querySelector('.hdr-name').textContent = '嘟嘟・天機風險推演陣';
     document.querySelector('.b-kicker').textContent = 'DUDU · 天機風險推演';
     document.querySelector('.b-title').textContent = '先觀劫數，再問長生。';
-    document.querySelector('.b-copy').textContent = '以靈石照見倉位，以推演避開爆倉天劫。';
+    document.querySelector('.b-copy').textContent = '以靈石照見倉位，推演重大虧損與代沖銷風險。';
     document.querySelector('.c-ticker-unit').textContent = '點';
 
     const modeCopy = {
       tx: '大台 <sub>鎮岳契 · 200靈石/點</sub>',
       mtx: '小台 <sub>凌雲契 · 50靈石/點</sub>',
-      mxf: '微台 <sub>青羽契 · 10靈石/點</sub>'
+      tmf: '微台 <sub>青羽契 · 10靈石/點</sub>'
     };
     document.querySelectorAll('.mode-tab').forEach(tab => {
       tab.innerHTML = modeCopy[tab.dataset.mode];
     });
 
     const labels = {
-      'v-idx': '當前天機點位 ',
+      'v-idx': '台指期天機點位 ',
       'v-eq': '靈石庫存（帳戶權益） ',
       'v-im': '開陣靈石 /口',
       'v-mm': '護陣靈石 /口',
       'v-pv': '每點靈石變化',
       'v-st': '天劫推演跌幅',
-      'v-ld': '單日天劫上限'
+      'v-ld': '極端天劫幅度'
     };
     Object.entries(labels).forEach(([id, label]) => setLeadingText(fieldLabel(id), label));
     ['v-eq', 'v-im', 'v-mm'].forEach(id => { fieldUnit(id).textContent = '萬靈石'; });
@@ -3374,10 +3738,10 @@
       hintText.textContent = '';
     }
 
-    setLeadingText(summaryLabel('s-cv'), '每口契約靈石面值');
-    setLeadingText(summaryLabel('s-ml'), '最大可開契約口數');
-    setLeadingText(summaryLabel('s-ll'), '觸及跌停最大靈石損失 /口');
-    setLeadingText(summaryLabel('s-sm'), '天劫後最多安全口數');
+    setLeadingText(summaryLabel('s-cv'), '每口契約靈石名目價值');
+    setLeadingText(summaryLabel('s-ml'), '開陣靈石推算上限');
+    setLeadingText(summaryLabel('s-ll'), '極端天劫估算損失 /口');
+    setLeadingText(summaryLabel('s-sm'), '天劫後護陣門檻口數');
     setLeadingText(summaryLabel('s-rm-c'), '保守道途 ');
     setLeadingText(summaryLabel('s-rm-s'), '標準道途 ');
     setLeadingText(summaryLabel('s-rm-a'), '進取上限 ');
@@ -3385,20 +3749,20 @@
     g('decision-hint').textContent = '↑ 點選下方契約卷軸任一列，查看渡劫風險批註';
     document.querySelector('.b-table-title').textContent = '天機契約風險卷軸';
     document.querySelector('.b-table-meta span').textContent = '點選任一列，即可展開渡劫批註';
-    document.querySelector('.b-row-count').textContent = '20 階推演';
+    document.querySelector('.b-row-count').textContent = '20 階視窗';
 
     const headers = [
-      '契約口數', '靈壓倍數', '距追繳劫線（點）', '追繳劫線',
+      '契約口數', '靈壓倍數', '距護陣臨界（點）', '護陣臨界點位（估算）',
       '天劫推演損失靈石', '每 100 點靈石損益', '靈石封印率', '剩餘可用靈石'
     ];
     document.querySelectorAll('.twrap thead th').forEach((th, index) => {
       th.textContent = headers[index];
     });
 
-    document.querySelector('.hist-btn').textContent = '歷代天劫榜';
-    document.querySelector('.stress-btns .stress-btn:last-child').textContent = '最大天劫';
-    document.querySelector('.hist-head-title').textContent = '凡界歷代市場天劫・收盤跌點 Top 10';
-    document.querySelector('.hist-head-sub').textContent = '天機閣據 TWSE 每日收盤資料排序 · 核對至 2026-08-14';
+    document.querySelector('.hist-btn').textContent = '近年天劫榜';
+    document.querySelector('.stress-btns .stress-btn:last-child').textContent = '近年最大';
+    document.querySelector('.hist-head-title').textContent = 'TWSE 加權指數・2024 年以來單日收盤跌點 Top 10';
+    document.querySelector('.hist-head-sub').textContent = '天機閣據 TWSE 每日收盤資料排序 · 範圍 2024-01-01～2026-08-14';
 
     setLeadingText(g('b-feedback'), '仙門傳音');
     document.querySelector('#feedback-overlay .sheet-kicker').textContent = 'DUDU · 仙門傳音';
@@ -3420,9 +3784,9 @@
     document.querySelector('.foot .note').textContent = '靈石為介面代稱（1 靈石＝NT$1）· 數據僅供推演，不構成投資建議';
 
     const legends = document.querySelectorAll('.foot .leg');
-    setTrailingText(legends[0], '低靈壓 <4x');
-    setTrailingText(legends[1], '中靈壓 4–8x');
-    setTrailingText(legends[2], '高靈壓 ≥8x');
+    setTrailingText(legends[0], '低靈壓 ≤4x 且 ≤30%');
+    setTrailingText(legends[1], '中靈壓：其餘區間');
+    setTrailingText(legends[2], '高靈壓 >8x 或 >70%');
     setTrailingText(legends[3], '開陣靈石上限列');
     setTrailingText(legends[4], '天劫危險區');
   }
@@ -3458,67 +3822,129 @@
     popover.dataset.placement = placeBelow ? 'bottom' : 'top';
   }
 
-  function closeHelpPopover() {
+  function closeHelpPopover(restoreFocus = false) {
     const popover = g('help-popover');
+    const closingTip = activeHelpTip;
     if (activeHelpTip) {
       activeHelpTip.classList.remove('is-open');
       activeHelpTip.setAttribute('aria-expanded', 'false');
+      activeHelpTip.removeAttribute('aria-describedby');
     }
     activeHelpTip = null;
     helpPopoverLocked = false;
     if (popover) {
       popover.classList.add('hidden');
+      popover.classList.remove('has-glossary');
       popover.textContent = '';
+      popover.setAttribute('role', 'tooltip');
+      popover.setAttribute('aria-live', 'polite');
+      popover.removeAttribute('aria-label');
+      popover.removeAttribute('aria-modal');
+      popover.removeAttribute('tabindex');
       delete popover.dataset.placement;
     }
+    if (restoreFocus && closingTip) {
+      requestAnimationFrame(() => closingTip.focus({ preventScroll: true }));
+    }
+    return closingTip;
   }
 
-  function openHelpPopover(tip, locked = false) {
+  function openHelpPopover(tip, locked = false, focusPopover = false) {
     const popover = g('help-popover');
     if (!popover || !tip?.dataset.tip) return;
     if (activeHelpTip && activeHelpTip !== tip) closeHelpPopover();
 
     activeHelpTip = tip;
     helpPopoverLocked = locked;
+    const template = tip.dataset.helpTemplate ? g(tip.dataset.helpTemplate) : null;
+    const isGlossary = Boolean(template?.content);
     tip.classList.add('is-open');
     tip.setAttribute('aria-expanded', 'true');
-    popover.textContent = tip.dataset.tip;
+    popover.classList.toggle('has-glossary', isGlossary);
+    popover.setAttribute('role', isGlossary ? 'dialog' : 'tooltip');
+    popover.setAttribute('aria-live', isGlossary ? 'off' : 'polite');
+    if (isGlossary) {
+      tip.removeAttribute('aria-describedby');
+      popover.setAttribute('aria-modal', 'false');
+      popover.setAttribute('tabindex', '-1');
+      popover.setAttribute('aria-label', tip.dataset.helpTitle || '名詞說明');
+    } else {
+      tip.setAttribute('aria-describedby', 'help-popover');
+      popover.removeAttribute('aria-label');
+      popover.removeAttribute('aria-modal');
+      popover.removeAttribute('tabindex');
+    }
+    popover.replaceChildren();
+    if (tip.dataset.helpTitle) {
+      const title = document.createElement('strong');
+      title.className = 'help-popover-title';
+      title.textContent = tip.dataset.helpTitle;
+      popover.appendChild(title);
+    }
+    if (template?.content) {
+      popover.appendChild(template.content.cloneNode(true));
+    } else {
+      const body = document.createElement('span');
+      body.className = 'help-popover-body';
+      body.textContent = tip.dataset.tip;
+      popover.appendChild(body);
+    }
     popover.classList.remove('hidden');
-    requestAnimationFrame(positionHelpPopover);
+    requestAnimationFrame(() => {
+      positionHelpPopover();
+      if (isGlossary && focusPopover) popover.focus({ preventScroll: true });
+    });
   }
 
   function initHelpTips() {
-    if (!CULTIVATION_MODE) return;
-    document.querySelectorAll('.tip').forEach(tip => {
-      tip.setAttribute('aria-controls', 'help-popover');
-      tip.addEventListener('click', event => {
+    if (!['b', 'c'].includes(APP_VARIANT)) return;
+    document.querySelectorAll('.tip').forEach(tip => tip.setAttribute('aria-controls', 'help-popover'));
+    document.addEventListener('click', event => {
+      const tip = event.target.closest('button.tip');
+      if (tip) {
         event.preventDefault();
         event.stopPropagation();
         if (activeHelpTip === tip && helpPopoverLocked) closeHelpPopover();
         else openHelpPopover(tip, true);
-      });
-      tip.addEventListener('keydown', event => {
+        return;
+      }
+      if (event.target.closest?.('#help-popover')) return;
+      if (activeHelpTip) closeHelpPopover();
+    });
+    document.addEventListener('keydown', event => {
+      const tip = event.target.closest?.('button.tip');
+      if (tip) {
         if (event.key !== 'Enter' && event.key !== ' ') return;
         event.preventDefault();
         event.stopPropagation();
         if (activeHelpTip === tip && helpPopoverLocked) closeHelpPopover();
-        else openHelpPopover(tip, true);
-      });
-      tip.addEventListener('mouseenter', () => {
-        if (!helpPopoverLocked) openHelpPopover(tip, false);
-      });
-      tip.addEventListener('mouseleave', () => {
-        if (activeHelpTip === tip && !helpPopoverLocked) closeHelpPopover();
-      });
-      tip.addEventListener('focus', () => {
-        if (!helpPopoverLocked) openHelpPopover(tip, false);
-      });
-      tip.addEventListener('blur', () => {
-        if (activeHelpTip === tip && !helpPopoverLocked) closeHelpPopover();
-      });
+        else openHelpPopover(tip, true, true);
+      }
     });
-    document.addEventListener('click', event => {
-      if (activeHelpTip && !event.target.closest('.tip')) closeHelpPopover();
+    document.addEventListener('mouseover', event => {
+      const tip = event.target.closest?.('button.tip');
+      if (tip && !tip.dataset.helpTemplate && !tip.contains(event.relatedTarget) && !helpPopoverLocked) openHelpPopover(tip, false);
+    });
+    document.addEventListener('mouseout', event => {
+      const tip = event.target.closest?.('button.tip');
+      if (tip && !tip.contains(event.relatedTarget) && activeHelpTip === tip && !helpPopoverLocked) closeHelpPopover();
+    });
+    document.addEventListener('focusin', event => {
+      const tip = event.target.closest?.('button.tip');
+      if (tip && !tip.dataset.helpTemplate && !helpPopoverLocked) openHelpPopover(tip, false);
+    });
+    document.addEventListener('focusout', event => {
+      const tip = event.target.closest?.('button.tip');
+      if (tip && activeHelpTip === tip && !helpPopoverLocked) closeHelpPopover();
+    });
+    g('help-popover')?.addEventListener('focusout', event => {
+      const popover = g('help-popover');
+      if (
+        helpPopoverLocked &&
+        popover?.classList.contains('has-glossary') &&
+        !popover.contains(event.relatedTarget) &&
+        !activeHelpTip?.contains(event.relatedTarget)
+      ) closeHelpPopover();
     });
     window.addEventListener('resize', positionHelpPopover);
     window.addEventListener('scroll', positionHelpPopover, true);
@@ -3527,7 +3953,7 @@
   document.addEventListener('keydown', e => {
     const openSheetEl = document.querySelector('.sheet-overlay:not(.hidden)');
     if (e.key === 'Escape') {
-      closeHelpPopover();
+      closeHelpPopover(true);
       closeHist();
       if (openSheetEl) closeSheet(openSheetEl.id);
       return;
@@ -3546,10 +3972,27 @@
     btn.addEventListener('click', () => {
       document.querySelectorAll('.mode-tab').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+      contractFieldsCustomized = false;
       applyActiveMode();
       render();
     });
   });
+
+  const variantSwitch = g('variant-switch');
+  if (variantSwitch && (APP_VARIANT === 'b' || CULTIVATION_MODE)) {
+    const targetVariant = CULTIVATION_MODE ? 'b' : 'c';
+    variantSwitch.textContent = CULTIVATION_MODE ? '◇ 極簡模式' : '修仙模式';
+    variantSwitch.setAttribute(
+      'aria-label',
+      CULTIVATION_MODE ? '切換至 B 版極簡模式' : '切換至 C 版修仙模式'
+    );
+    variantSwitch.addEventListener('click', () => switchVariant(targetVariant));
+    variantSwitch.addEventListener('keydown', event => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      switchVariant(targetVariant);
+    });
+  }
 
   const bAdvanced = g('b-advanced');
   if (bAdvanced) {
@@ -3586,10 +4029,10 @@
   }
   if (CULTIVATION_MODE) {
     applyCultivationCopy();
-    initHelpTips();
     bAdvanced.textContent = '開啟玄機';
     bHistory.textContent = '歷代天劫';
   }
+  initHelpTips();
 
   init();
 </script>

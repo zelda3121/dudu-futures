@@ -12,3 +12,9 @@
     Cache-Control = "no-store"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/api/margins"
+  [headers.values]
+    Cache-Control = "public, max-age=900, s-maxage=21600, stale-while-revalidate=86400"
+    X-Content-Type-Options = "nosniff"
