@@ -32,6 +32,11 @@ html[data-variant="c"] {
   --txt: #f2ead2;
   --x-serif: "Songti TC", "STSong", "Noto Serif TC", "PMingLiU", serif;
   --x-panel-shadow: 0 18px 55px rgba(0, 0, 0, .22), inset 0 1px 0 rgba(255, 239, 188, .06);
+  --x-layer-scene: 2;
+  --x-layer-panel: 10;
+  --x-layer-content: 20;
+  --x-layer-control: 30;
+  --x-layer-popover: 40;
   overflow-x: clip;
 }
 
@@ -268,16 +273,17 @@ html[data-variant="c"] .c-side-verse::after { display: none; }
 html[data-variant="c"] .c-side-left { display: flex; left: 35px; top: 445px; }
 html[data-variant="c"] .c-side-right { right: 28px; top: 520px; }
 
-/* True transparent, page-scoped foreground; never fixed and never a repeated scenic crop. */
+/* Page-scoped scene decoration. It may show through glass panels, never cover data. */
 html[data-variant="c"] .c-cultivator {
   position: absolute;
   top: 725px;
   left: -38px;
-  z-index: 8;
+  z-index: var(--x-layer-scene);
   display: block;
-  width: 240px;
+  width: clamp(205px, 12vw, 230px);
+  max-width: 230px;
   height: auto;
-  opacity: .92;
+  opacity: .88;
   pointer-events: none;
   filter: saturate(.78) brightness(.9) contrast(.96) drop-shadow(9px 14px 18px rgba(3, 16, 20, .36));
 }
@@ -522,6 +528,22 @@ html[data-variant="c"] .b-action.active {
   box-shadow: 0 0 19px rgba(226, 196, 119, .13), inset 0 1px 0 rgba(255, 239, 188, .11);
 }
 
+/* Skin switch stays inside the existing jade action system, with quieter weight. */
+html[data-variant="c"] .variant-switch-action {
+  border-color: rgba(220, 203, 158, .36);
+  color: #c7c3ad;
+  background:
+    linear-gradient(180deg, rgba(50, 69, 72, .36), rgba(13, 35, 40, .54)),
+    radial-gradient(circle at 50% 0, rgba(243, 222, 161, .045), transparent 58%);
+}
+
+html[data-variant="c"] .variant-switch-action:hover,
+html[data-variant="c"] .variant-switch-action:focus-visible {
+  border-color: rgba(237, 208, 131, .72);
+  color: #f0d99f;
+  background: linear-gradient(180deg, rgba(42, 75, 78, .72), rgba(9, 32, 38, .84));
+}
+
 /* Deep jade seal button: conspicuous, but not bright green or Bootstrap-like. */
 html[data-variant="c"] .b-action.feedback-primary {
   min-width: 145px;
@@ -601,7 +623,7 @@ html[data-variant="c"] .c-notice-detail { color: #d0d8d3; }
 
 html[data-variant="c"] .c-dashboard {
   position: relative;
-  z-index: 4;
+  z-index: var(--x-layer-panel);
   display: grid;
   grid-template-columns: minmax(0, 1.12fr) minmax(480px, .88fr);
   grid-template-areas:
@@ -777,6 +799,30 @@ html[data-variant="c"] .tip {
   cursor: pointer;
   touch-action: manipulation;
 }
+html[data-variant="c"] .tip.help-link {
+  width: auto;
+  height: auto;
+  min-height: 19px;
+  margin: 0;
+  padding: 2px 6px;
+  border-radius: 999px;
+  font: 680 8px/1.2 var(--x-serif);
+  white-space: nowrap;
+}
+html[data-variant="c"] .tip.help-link.table-glossary {
+  min-height: 26px;
+  padding: 4px 9px;
+  font-size: 8.5px;
+}
+html[data-variant="c"] .action-help-group > .action-tip {
+  top: 50%;
+  right: 8px;
+  width: 17px;
+  height: 17px;
+  margin: 0;
+  transform: translateY(-50%);
+}
+html[data-variant="c"] .action-help-group > .b-action.has-help { padding-right: 31px; }
 html[data-variant="c"] .tip::before,
 html[data-variant="c"] .tip::after { display: none !important; }
 html[data-variant="c"] .tip:hover,
@@ -793,7 +839,7 @@ html[data-variant="c"] .help-popover {
   position: fixed;
   z-index: 3500;
   width: max-content;
-  max-width: min(330px, calc(100vw - 24px));
+  max-width: min(430px, calc(100vw - 24px));
   padding: 10px 13px;
   border: 1px solid rgba(231, 204, 134, .68);
   border-radius: 3px;
@@ -810,6 +856,48 @@ html[data-variant="c"] .help-popover {
   letter-spacing: .035em;
   pointer-events: none;
   text-align: left;
+}
+html[data-variant="c"] .help-popover-title {
+  display: block;
+  margin-bottom: 5px;
+  color: #f0d58c;
+  font: 760 11.5px/1.35 var(--x-serif);
+  letter-spacing: .07em;
+}
+html[data-variant="c"] .help-popover-body {
+  display: block;
+  color: #d5ddd7;
+  white-space: pre-line;
+}
+html[data-variant="c"] .help-popover.has-glossary {
+  width: min(660px, calc(100vw - 24px));
+  max-width: min(660px, calc(100vw - 24px));
+  max-height: calc(100vh - 24px);
+  max-height: calc(100dvh - 24px);
+  padding: 14px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  pointer-events: auto;
+}
+html[data-variant="c"] .help-popover.has-glossary::before { display: none; }
+html[data-variant="c"] .help-glossary-item {
+  border-color: rgba(231, 204, 134, .2);
+  background: linear-gradient(90deg, rgba(225, 196, 118, .055), rgba(30, 64, 64, .12));
+}
+html[data-variant="c"] .help-glossary-item dt,
+html[data-variant="c"] .help-glossary-note strong { color: #f0d58c; }
+html[data-variant="c"] .help-glossary-item dt::before {
+  border-color: rgba(231, 204, 134, .38);
+  color: #ebce83;
+  background: rgba(18, 49, 50, .72);
+  box-shadow: inset 0 0 8px rgba(231, 204, 134, .06);
+}
+html[data-variant="c"] .help-glossary-alias { color: #91b7ac; }
+html[data-variant="c"] .help-glossary-item dd { color: #d5ddd7; }
+html[data-variant="c"] .help-glossary-formula { color: #a9c7bd; }
+html[data-variant="c"] .help-glossary-note {
+  border-top-color: rgba(231, 204, 134, .22);
+  color: #aebfba;
 }
 html[data-variant="c"] .help-popover::before {
   content: "";
@@ -843,7 +931,13 @@ html[data-variant="c"] .hint-bar {
   box-shadow: inset 0 1px 0 rgba(225, 241, 217, .025);
   backdrop-filter: blur(8px);
 }
-html[data-variant="c"] .data-status { margin-left: auto; }
+html[data-variant="c"] .data-status { margin-left: auto; flex-wrap: wrap; }
+html[data-variant="c"] .validation-status { color: #e28b83; }
+html[data-variant="c"] .model-help { color: #b9b28e; }
+html[data-variant="c"] .summ-help { top: 4px; right: 14px; }
+html[data-variant="c"] .dc-help { vertical-align: -3px; }
+html[data-variant="c"] .dc-na,
+html[data-variant="c"] .liq-na { color: #a9aaa0 !important; font-size: 8.5px; white-space: nowrap; }
 
 /* ───────────────────────────── Jade result instruments ─────────────────── */
 
@@ -1030,7 +1124,7 @@ html[data-variant="c"] .b-tablebar::after {
 /* ─────────────────────────────── Risk scroll ───────────────────────────── */
 
 html[data-variant="c"] .b-tablebar {
-  z-index: 4;
+  z-index: var(--x-layer-panel);
   min-height: 45px;
   margin: 12px 0 0;
   padding: 17px 15px 7px;
@@ -1060,7 +1154,7 @@ html[data-variant="c"] .b-table-title {
 
 html[data-variant="c"] .twrap {
   position: relative;
-  z-index: 4;
+  z-index: var(--x-layer-panel);
   height: clamp(430px, calc(100vh - 570px), 560px);
   min-height: 430px;
   margin: 0;
@@ -1175,7 +1269,7 @@ html[data-variant="c"] tbody tr.pinned td:last-child::after {
 
 html[data-variant="c"] .foot {
   position: relative;
-  z-index: 4;
+  z-index: var(--x-layer-panel);
   margin: 8px 0 0;
   border-color: rgba(123, 145, 114, .3);
   background: rgba(7, 27, 32, .58);
@@ -1292,7 +1386,8 @@ html[data-variant="c"] .foot {
   html[data-variant="c"] .c-cultivator {
     top: 730px;
     left: clamp(-56px, calc((1920px - 100vw) / 2), 0px);
-    width: 250px;
+    width: clamp(215px, 10.8vw, 230px);
+    max-width: 230px;
   }
 }
 
@@ -1319,6 +1414,15 @@ html[data-variant="c"] textarea:focus-visible {
   html[data-variant="c"] .c-side-verse > span { font-size: 17px; }
   html[data-variant="c"] .c-dashboard { grid-template-columns: minmax(0, 1fr) minmax(455px, .9fr); }
   html[data-variant="c"] .summ .s { padding-right: 7px; padding-left: 7px; }
+  html[data-variant="c"] .b-actions { gap: 5px; }
+  html[data-variant="c"] .b-action {
+    min-width: 80px;
+    padding-right: 8px;
+    padding-left: 8px;
+    font-size: 10.5px;
+    white-space: nowrap;
+  }
+  html[data-variant="c"] .b-action.feedback-primary { min-width: 116px; }
 }
 
 @media (max-width: 1250px) {
